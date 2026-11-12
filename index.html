@@ -542,10 +542,12 @@ body[data-g="home"] .controls{display:none}
         <label>Meu dia começa<input id="oIni" type="time" value="07:00" required></label>
         <label>e termina<input id="oFim" type="time" value="22:30" required></label>
         <label>Treino (minutos)<input id="oTreinoMin" type="number" min="0" step="5" value="60"></label>
+        <label>Experiência no treino<select id="oNivel"><option value="iniciante">Iniciante (até 6 meses)</option><option value="intermediario">Intermediário</option><option value="avancado">Avançado (mais de 2 anos)</option></select></label>
+        <label>Onde treina<select id="oLocal"><option value="academia">Academia</option><option value="casa">Em casa, sem equipamento</option></select></label>
         <div class="wide"><span class="onb-lab">Dias de treino</span><div class="pillbar sm onb-dias" id="oDias" role="group" aria-label="Dias de treino"></div></div>
         <label class="wide">Descreva sua rotina<textarea id="oDesc" placeholder="Ex.: trabalho das 8h às 12h de segunda a sexta, faculdade à noite, treino depois do trabalho, sábado livre."></textarea></label>
       </div>
-      <p class="hint">Os horários fixos (aulas, trabalho) você coloca na Agenda, dia por dia. A descrição fica salva no seu perfil.</p>
+      <p class="hint">Os horários fixos (aulas, trabalho) você coloca na Agenda, dia por dia. Com os dias, os minutos, a experiência e o local, o app monta sua ficha de treino com os exercícios do mapa muscular 3D.</p>
     </fieldset>
     <p class="err" id="onbErr" hidden></p>
     <div class="onb-f"><button class="btn" type="submit" id="onbSave">Começar</button></div>
@@ -1952,26 +1954,99 @@ const MFIT={
 
 return {MFIT};
 })();
-let mfDay=null, mfReady=false, mfPending=null;
+
+/* Treino gerado no cadastro, a partir do banco de exercícios do Mapa Muscular 360 (mapa.html).
+   Os nomes são os mesmos do banco, então "Ver execução animada" funciona em todos. */
+const TREINO_GEN=(()=>{
+  const ACAD={
+    push:["Supino reto","Supino inclinado","Desenvolvimento","Elevação lateral","Crucifixo","Tríceps pulley","Tríceps testa","Elevação frontal"],
+    pull:["Puxada frontal","Remada na máquina","Remada curvada","Crucifixo inverso","Rosca direta","Rosca martelo","Face pull","Puxada neutra no triângulo"],
+    legs:["Agachamento livre","Leg press","Stiff","Cadeira extensora","Mesa flexora","Hip thrust","Gêmeos em pé","Abdominal supra"],
+    upper:["Supino reto","Puxada frontal","Desenvolvimento","Remada na máquina","Elevação lateral","Rosca direta","Tríceps pulley","Crucifixo inverso"],
+    lower:["Agachamento livre","Stiff","Leg press","Hip thrust","Cadeira flexora","Cadeira extensora","Gêmeos sentado","Prancha"],
+    fullA:["Agachamento livre","Supino reto","Puxada frontal","Stiff","Desenvolvimento","Remada na máquina","Prancha","Rosca direta"],
+    fullB:["Leg press","Supino inclinado","Remada curvada","Hip thrust","Elevação lateral","Tríceps pulley","Elevação de pernas","Gêmeos em pé"]
+  };
+  const CASA={
+    fullA:["Agachamento livre","Flexão de braço","Afundo búlgaro","Prancha","Superman","Hip thrust","Mergulho","Gêmeos em pé"],
+    fullB:["Agachamento sumô","Flexão de braço","Afundo lateral","Prancha lateral","Nordic curl","Hip thrust","Mergulho","Abdominal bicicleta"],
+    fullC:["Afundo búlgaro","Flexão de braço","Agachamento livre","Elevação de pernas","Superman","Mergulho","Russian twist","Pular corda"]
+  };
+  const TIPO={
+    push:{nome:"Peito, ombro e tríceps",tipo:"MMSS",grupos:["Peito","Ombro","Tríceps"]},
+    pull:{nome:"Costas, ombro e bíceps",tipo:"MMSS",grupos:["Costas","Ombro","Bíceps"]},
+    legs:{nome:"Pernas e glúteo",tipo:"MMII",grupos:["Pernas","Glúteo","Abdômen"]},
+    upper:{nome:"Membros superiores",tipo:"MMSS",grupos:["Peito","Costas","Ombro","Bíceps","Tríceps"]},
+    lower:{nome:"Membros inferiores",tipo:"MMII",grupos:["Pernas","Glúteo","Abdômen"]},
+    fullA:{nome:"Corpo inteiro A",tipo:"Full",grupos:["Pernas","Peito","Costas","Ombro","Abdômen"]},
+    fullB:{nome:"Corpo inteiro B",tipo:"Full",grupos:["Pernas","Peito","Costas","Ombro","Abdômen"]},
+    fullC:{nome:"Corpo inteiro C",tipo:"Full",grupos:["Pernas","Peito","Glúteo","Abdômen"]}
+  };
+  const TEMPO=new Set(["Prancha","Prancha lateral","Pular corda","Copenhagen plank"]);
+  const DIVISAO={
+    1:["fullA"],2:["fullA","fullB"],3:["push","pull","legs"],4:["upper","lower","upper","lower"],
+    5:["push","pull","legs","upper","lower"],6:["push","pull","legs","push","pull","legs"],7:["push","pull","legs","push","pull","legs","fullA"]
+  };
+  function divisao(n,nivel,local){
+    if(local==="casa") return Array.from({length:n},(_,i)=>["fullA","fullB","fullC"][i%3]);
+    if(nivel==="iniciante"&&n<=3) return Array.from({length:n},(_,i)=>i%2?"fullB":"fullA");
+    return DIVISAO[Math.min(7,Math.max(1,n))];
+  }
+  function gerar({dias=[],min=60,nivel="iniciante",local="academia",goal=500}={}){
+    const ds=[...dias].map(Number).sort((a,b)=>a-b);
+    const plano=divisao(ds.length,nivel,local);
+    const qtd=Math.min(8,Math.max(4,Math.round(((+min||60)-10)/8)));
+    const perder=+goal>0;
+    const series=nivel==="iniciante"?3:nivel==="avancado"?4:3;
+    const reps=perder?"10–12":(nivel==="avancado"?"6–10":"8–12");
+    const desc=perder?"60s":"90s";
+    const carga=local==="casa"?"Peso do corpo":"Termine com 1–2 repetições sobrando";
+    const BANCO=local==="casa"?CASA:ACAD;
+    const out={};
+    ds.forEach((d,i)=>{
+      const k=plano[i%plano.length], t=TIPO[k];
+      out[d]={nome:t.nome,tipo:t.tipo,grupos:t.grupos,obs:null,
+        ex:BANCO[k].slice(0,qtd).map((n,j)=>({n,a:n,s:(nivel==="intermediario"&&j<2)?4:series,r:TEMPO.has(n)?"30–45s":reps,c:TEMPO.has(n)?"Corporal":carga,d:desc,m:j===0&&nivel!=="iniciante"?"Aquecimento antes":null,o:null}))};
+    });
+    const NIVEL={iniciante:"Iniciante",intermediario:"Intermediário",avancado:"Avançado"}[nivel]||"Iniciante";
+    const ONDE=local==="casa"?"em casa, sem equipamento":"na academia";
+    return {
+      gerado:true, nivel, local,
+      ficha:`Treino do Meu Ritmo · ${ds.length}x por semana ${ONDE}`,
+      objetivo:`${perder?"Redução de gordura":"Manutenção e força"} · ${NIVEL}`,
+      orient:(perder?"Descanse 1 minuto entre as séries e mantenha 20 a 30 minutos de cardio leve nos dias de treino ou nos de folga. ":"Descanse 1 minuto e meio entre as séries. ")+
+        "Use uma carga que deixe 1 a 2 repetições sobrando no fim de cada série e aumente aos poucos quando ficar fácil. Toque em \"Ver execução animada\" para ver o movimento no mapa muscular."+
+        (nivel==="iniciante"?" Nas duas primeiras semanas, priorize aprender o movimento antes de subir a carga.":""),
+      dias:out
+    };
+  }
+  return {gerar};
+})();
+let mfDay=null, mfReady=false, mfPending=null, treinoPlano=null;
+const planoTreino=()=>treinoPlano||MF_DATA.MFIT;
 function renderMfit(){
-  const N=nowInfo(); if(mfDay===null) mfDay = N.d<=4 ? N.d : 0;
-  const dia=MF_DATA.MFIT.dias[mfDay];
-  const tabs=[0,1,2,3,4].map(i=>`<button data-mf="${i}" aria-pressed="${i===mfDay}">${DAYS[i].slice(0,3)}</button>`).join("");
+  const P=planoTreino(), dd=Object.keys(P.dias||{}).map(Number).sort((a,b)=>a-b);
+  const refazer=`<button class="btn line" data-mfgen="1">${P.gerado?"Refazer meu treino":"Gerar um treino para mim"}</button>`;
+  if(!dd.length){ $("mfBody").innerHTML=`<div class="mf-head"><h2>Treino</h2><p class="hint">Nenhum dia de treino definido. Escolha os dias em "Meus dados" do cadastro e gere seu treino.</p></div>${refazer}`; return; }
+  const N=nowInfo(); if(mfDay===null||!dd.includes(mfDay)) mfDay = dd.includes(N.d) ? N.d : dd[0];
+  const dia=P.dias[mfDay];
+  const tabs=dd.map(i=>`<button data-mf="${i}" aria-pressed="${i===mfDay}">${DAYS[i].slice(0,3)}</button>`).join("");
   const exs=dia.ex.map((e,i)=>`<article class="mf-ex">
     <div class="mf-n"><span class="mf-i">${i+1}</span><div><b>${esc(e.n)}</b><small>${e.s}×${esc(e.r)}</small></div></div>
     <div class="mf-meta"><span>Carga <b>${esc(e.c)}</b></span><span>Descanso <b>${esc(e.d)}</b></span>${e.m?`<span>Método <b>${esc(e.m)}</b></span>`:""}</div>
-    <details><summary>Como executar</summary><button class="mf-btn" data-mfx="${esc(e.n)}">${ICON("dumbbell")}Ver execução animada</button>${e.o?`<p>${esc(e.o)}</p>`:""}</details>
+    <details><summary>Como executar</summary><button class="mf-btn" data-mfx="${esc(e.a||e.n)}">${ICON("dumbbell")}Ver execução animada</button>${e.o?`<p>${esc(e.o)}</p>`:""}</details>
   </article>`).join("");
   $("mfBody").innerHTML=`
-  <div class="mf-head"><h2>Treino</h2><p class="hint">${esc(MF_DATA.MFIT.ficha)} · ${esc(MF_DATA.MFIT.objetivo)}</p></div>
+  <div class="mf-head"><h2>Treino</h2><p class="hint">${esc(P.ficha)} · ${esc(P.objetivo)}</p></div>
   <div class="pillbar sm" role="group" aria-label="Dia do treino">${tabs}</div>
   <section class="panelc">
     <h3>${ICON("dumbbell")}${esc(dia.nome)}</h3>
     <div class="chips">${dia.grupos.map(g=>`<span class="mf-chip">${esc(g)}</span>`).join("")}</div>
     ${dia.obs?`<p class="hint">${esc(dia.obs)}</p>`:""}
-    <details><summary class="hint">Orientações gerais</summary><p class="hint">${esc(MF_DATA.MFIT.orient)}</p></details>
+    <details><summary class="hint">Orientações gerais</summary><p class="hint">${esc(P.orient)}</p></details>
   </section>
-  <div class="mf-list">${exs}</div>`;
+  <div class="mf-list">${exs}</div>
+  <p class="hint" style="margin-top:12px">${refazer}</p>`;
 }
 function mfShow(key){
   const v=$("mfViewer"), fr=$("mfFrame");
@@ -1988,6 +2063,7 @@ window.addEventListener("message",e=>{
 $("mfit").addEventListener("click",e=>{
   if(e.target.closest("[data-mfclose]")){ $("mfViewer").hidden=true; $("mfFrame").removeAttribute("src"); mfReady=false; mfPending=null; return; }
   const x=e.target.closest("[data-mfx]"); if(x){ mfShow(x.dataset.mfx); return; }
+  if(e.target.closest("[data-mfgen]")){ if(typeof abrirOnb==="function"&&window.__sbUser){ abrirOnb(); } else { treinoPlano=TREINO_GEN.gerar({dias:(rotina.treino||{}).dias||[],min:(rotina.treino||{}).min||60,nivel:perfil.nivel,local:perfil.local,goal:settings.goal}); mfDay=null; renderMfit(); } return; }
   const b=e.target.closest("[data-mf]"); if(b){ mfDay=+b.dataset.mf; renderMfit(); }
 });
 
@@ -2005,6 +2081,7 @@ function abrirOnb(){
   const sel=new Set(((rotina.treino||{}).dias)||[]);
   $("oDias").innerHTML=DAYS.map((n,i)=>`<button type="button" data-d="${i}" aria-pressed="${sel.has(i)}">${n.slice(0,3)}</button>`).join("");
   $("oDesc").value=perfil.descricao||"";
+  $("oNivel").value=perfil.nivel||"iniciante"; $("oLocal").value=perfil.local||"academia";
   $("onbErr").hidden=true; $("onb").hidden=false; document.body.style.overflow="hidden"; setTimeout(()=>$("oNome").focus(),50);
 }
 $("oDias").addEventListener("click",e=>{ const b=e.target.closest("button[data-d]"); if(b) b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true"); });
@@ -2012,20 +2089,22 @@ $("onbForm").addEventListener("submit",async e=>{
   e.preventDefault(); const btn=$("onbSave"); btn.disabled=true; $("onbErr").hidden=true;
   const dias=[...$("oDias").querySelectorAll("button[aria-pressed=true]")].map(b=>+b.dataset.d).sort();
   settings={...DEFAULTS,...settings, sexo:$("oSexo").value, age:+$("oIdade").value, height:+$("oAltura").value, weight:+$("oPeso").value, factor:+$("oFator").value, goal:+$("oMeta").value};
-  perfil={...perfil, nome:$("oNome").value.trim(), sexo:$("oSexo").value, descricao:$("oDesc").value.trim(), atualizadoEm:new Date().toISOString()};
+  perfil={...perfil, nome:$("oNome").value.trim(), sexo:$("oSexo").value, descricao:$("oDesc").value.trim(), nivel:$("oNivel").value, local:$("oLocal").value, atualizadoEm:new Date().toISOString()};
   if(!perfil.criadoEm) perfil.criadoEm=perfil.atualizadoEm;
   rotina.inicio=$("oIni").value||"07:00"; rotina.fim=$("oFim").value||"22:30"; rotina.treino={min:Math.max(0,+$("oTreinoMin").value||0),dias};
   try{
     await db.doc("tracker/settings").set(settings);
     await db.doc("tracker/rotina").set(strip(rotina));
     await db.doc("tracker/perfil").set(perfil);
+    treinoPlano=TREINO_GEN.gerar({dias, min:rotina.treino.min, nivel:perfil.nivel, local:perfil.local, goal:settings.goal}); mfDay=null;
+    await db.doc("tracker/treino").set(treinoPlano);
     $("onb").hidden=true; document.body.style.overflow=""; render();
   }catch(err){ $("onbErr").textContent="Não consegui salvar. Confira a internet e tente de novo."; $("onbErr").hidden=false; }
   finally{ btn.disabled=false; }
 });
 
 /* Supabase: projeto Automação do carro, schema meu_ritmo */
-const AGENTE_WHATSAPP="", AGENTE_API="https://agente-whatsapp-wheat.vercel.app";
+const AGENTE_WHATSAPP="15551453801", AGENTE_API="https://agente-whatsapp-wheat.vercel.app";
 const SB_URL="https://agdyspfoupflwdesemdl.supabase.co", SB_KEY="sb_publishable_BiPX3KYCfAGIgLmHmfaI0w_J0XhyyAD";
 function supaDb(sb,uid){
   const T=()=>sb.schema("meu_ritmo").from("tracker");
@@ -2103,7 +2182,7 @@ function acctUi(sb,session){
     clearTimeout(timer); $("storeNote").textContent="";
     const next={}, ag={}; let rot=null, base=null;
     let temPerfil=false;
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
     days=next; agMerge(ag,rot); safeRender();
     if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
