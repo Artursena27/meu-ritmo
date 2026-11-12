@@ -386,6 +386,7 @@ body[data-g="home"] .controls{display:none}
 .acct-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .acct-form input{width:min(220px,100%);flex:1 1 160px}
 .acct-msg{flex-basis:100%;margin:0;font-size:12.5px;color:var(--warn)}
+.acct-code input{letter-spacing:4px;font-family:var(--mono);max-width:180px}
 .acct-on .acct-txt{flex-direction:row;gap:8px;align-items:baseline;flex-wrap:wrap}
 </style>
 
@@ -457,6 +458,11 @@ body[data-g="home"] .controls{display:none}
         <input id="acctPass" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required>
         <button class="btn" type="submit" id="acctLogin">Entrar</button>
         <button class="btn line" type="button" id="acctSignup">Criar conta</button>
+      </form>
+      <form class="acct-form acct-code" id="acctCodeForm" hidden autocomplete="one-time-code">
+        <input id="acctCode" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Código do e-mail" aria-label="Código de confirmação">
+        <button class="btn" type="submit" id="acctVerify">Confirmar</button>
+        <button class="btn line" type="button" id="acctResend">Reenviar código</button>
       </form>
       <p class="acct-msg" id="acctMsg" hidden></p>
     </div>
@@ -2037,14 +2043,27 @@ function acctUi(sb,session){
   const box=$("acct"); if(!box||!sb) return; box.hidden=false;
   const msg=t=>{ $("acctMsg").textContent=t; $("acctMsg").hidden=!t; };
   if(session){ $("acctOut").hidden=true; $("acctIn").hidden=false; $("acctWho").textContent=session.user.email||""; }
+  let emailPendente="";
+  const pedirCodigo=(email,texto)=>{ emailPendente=email; $("acctCodeForm").hidden=false; $("acctCode").value=""; msg(texto); setTimeout(()=>$("acctCode").focus(),50); };
   $("acctForm").onsubmit=async e=>{ e.preventDefault(); msg("Entrando…");
-    const {error}=await sb.auth.signInWithPassword({email:$("acctEmail").value.trim(),password:$("acctPass").value});
-    if(error) msg(/confirm/i.test(error.message)?"Confirme o e-mail pelo link que chegou na sua caixa de entrada e tente de novo.":"Não consegui entrar: e-mail ou senha incorretos."); };
+    const email=$("acctEmail").value.trim();
+    const {error}=await sb.auth.signInWithPassword({email,password:$("acctPass").value});
+    if(error){ if(/confirm/i.test(error.message)) pedirCodigo(email,`Falta confirmar o e-mail. Digite o código que chegou em ${email} (veja também o spam) ou clique no link do e-mail.`);
+      else msg("Não consegui entrar: e-mail ou senha incorretos."); } };
+  $("acctCodeForm").onsubmit=async e=>{ e.preventDefault();
+    const token=$("acctCode").value.replace(/\D/g,""); if(token.length<6){ msg("O código tem 6 dígitos ou mais."); return; }
+    msg("Confirmando…");
+    const {error}=await sb.auth.verifyOtp({email:emailPendente,token,type:"signup"});
+    if(error) msg(/expired|invalid/i.test(error.message)?"Código errado ou vencido. Confira ou peça outro.":"Não consegui confirmar: "+error.message);
+    else msg("E-mail confirmado! Entrando…"); };
+  $("acctResend").onclick=async ()=>{ if(!emailPendente) return; msg("Reenviando…");
+    const {error}=await sb.auth.resend({type:"signup",email:emailPendente,options:{emailRedirectTo:location.origin}});
+    msg(error?(/rate|seconds|limit/i.test(error.message)?"Espere um pouco antes de pedir outro código (limite de envios).":"Não consegui reenviar: "+error.message):`Código reenviado para ${emailPendente}. Pode levar alguns minutos; veja o spam.`); };
   $("acctSignup").onclick=async ()=>{ const email=$("acctEmail").value.trim(), password=$("acctPass").value, nome=$("acctNome").value.trim();
     if($("acctNome").hidden){ $("acctNome").hidden=false; $("acctLogin").hidden=true; $("acctNome").focus(); msg("Preencha nome, e-mail e uma senha (mínimo de 6 caracteres) e clique em Criar conta."); return; }
     if(!nome||!email||password.length<6){ msg("Preencha nome, e-mail e uma senha com pelo menos 6 caracteres."); return; }
     msg("Criando conta…"); const {data,error}=await sb.auth.signUp({email,password,options:{data:{nome},emailRedirectTo:location.origin}});
-    if(error) msg("Não consegui criar a conta: "+error.message); else if(!data.session){ msg("Conta criada. Abra o e-mail de confirmação, clique no link e depois entre aqui."); $("acctNome").hidden=true; $("acctLogin").hidden=false; } };
+    if(error) msg("Não consegui criar a conta: "+error.message); else if(!data.session){ $("acctNome").hidden=true; $("acctLogin").hidden=false; pedirCodigo(email,`Conta criada! Mandamos um código para ${email}. Digite aqui embaixo (veja também o spam), ou clique no link do e-mail.`); } };
   $("acctLogout").onclick=async ()=>{ await sb.auth.signOut(); };
 }
 (async ()=>{
