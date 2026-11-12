@@ -366,7 +366,17 @@ body[data-g="home"] .controls{display:none}
 .mf-ex details summary{cursor:pointer;color:var(--neon);font-size:13px;font-weight:600}
 .mf-ex details p{font-size:13.5px;color:var(--muted);line-height:1.5;margin:8px 0 0}
 .mf-chip{border:1px solid var(--edge);background:rgba(0,0,0,.25);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:#d7a6ff}
-.mf-viewer{display:flex;flex-direction:column;gap:6px;border:1px solid var(--edge);border-radius:18px;overflow:hidden;background:var(--glass);min-width:0}.mf-vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px 0}.mf-vh b{font-size:15px}.mf-viewer iframe{width:100%;height:min(62vh,520px);border:0;display:block;background:transparent}.mf-btn{margin-top:8px;align-self:flex-start;border:1px solid var(--neon);background:transparent;color:#d7a6ff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}.tli.free{cursor:pointer}.tli.free.open{cursor:default;background:rgba(62,232,165,.09)}.frform{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;min-width:0}.frform input[data-role=fr_t]{width:100%}.frform .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.frform select{min-width:0;max-width:100%}</style>
+.mf-viewer{display:flex;flex-direction:column;gap:6px;border:1px solid var(--edge);border-radius:18px;overflow:hidden;background:var(--glass);min-width:0}.mf-vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px 0}.mf-vh b{font-size:15px}.mf-viewer iframe{width:100%;height:min(62vh,520px);border:0;display:block;background:transparent}.mf-btn{margin-top:8px;align-self:flex-start;border:1px solid var(--neon);background:transparent;color:#d7a6ff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}.tli.free{cursor:pointer}.tli.free.open{cursor:default;background:rgba(62,232,165,.09)}.frform{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;min-width:0}.frform input[data-role=fr_t]{width:100%}.frform .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.frform select{min-width:0;max-width:100%}
+/* conta (Supabase) */
+.acct{background:var(--glass);border:1px solid var(--edge2);border-radius:18px;padding:12px 14px}
+.acct-in{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.acct-txt{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--muted);min-width:0}
+.acct-txt b{color:var(--ink);font-size:14px}
+.acct-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acct-form input{width:min(220px,100%);flex:1 1 160px}
+.acct-msg{flex-basis:100%;margin:0;font-size:12.5px;color:var(--warn)}
+.acct-on .acct-txt{flex-direction:row;gap:8px;align-items:baseline;flex-wrap:wrap}
+</style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -426,6 +436,23 @@ body[data-g="home"] .controls{display:none}
       </div>
     </div>
   </header>
+
+  <section class="acct" id="acct" hidden>
+    <div class="acct-in" id="acctOut">
+      <div class="acct-txt"><b>Entre para sincronizar</b><span>Seus dados ficam salvos na sua conta e aparecem no celular e no PC.</span></div>
+      <form class="acct-form" id="acctForm" autocomplete="on">
+        <input id="acctEmail" type="email" placeholder="E-mail" autocomplete="email" required>
+        <input id="acctPass" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required>
+        <button class="btn" type="submit" id="acctLogin">Entrar</button>
+        <button class="btn line" type="button" id="acctSignup">Criar conta</button>
+      </form>
+      <p class="acct-msg" id="acctMsg" hidden></p>
+    </div>
+    <div class="acct-in acct-on" id="acctIn" hidden>
+      <span class="acct-txt"><b>Sincronizado</b><span id="acctWho"></span></span>
+      <button class="btn line" type="button" id="acctLogout">Sair</button>
+    </div>
+  </section>
 
   <section class="home" id="home" hidden></section>
   <section class="ag" id="ag" hidden aria-live="polite"></section>
@@ -839,6 +866,7 @@ const MENU = [
 const MEALS=[["cafe","Café da manhã"],["almoco","Almoço"],["lanche","Lanche"],["janta","Janta"]];
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const START = new Date(2026,10,9);
 const WEEKS = Math.max(4, Math.floor((new Date().setHours(0,0,0,0)-START)/(7*864e5))+1);
@@ -1915,8 +1943,46 @@ $("mfit").addEventListener("click",e=>{
 /* início */
 (()=>{ const t=logicalToday(); week=Math.min(WEEKS-1,Math.max(0,Math.floor((t-START)/(7*864e5)))); })();
 render();
+/* Supabase: projeto Automação do carro, schema meu_ritmo */
+const SB_URL="https://agdyspfoupflwdesemdl.supabase.co", SB_KEY="sb_publishable_BiPX3KYCfAGIgLmHmfaI0w_J0XhyyAD";
+function supaDb(sb,uid){
+  const T=()=>sb.schema("meu_ritmo").from("tracker");
+  const idOf=p=>String(p).split("/").slice(1).join("/");
+  return {
+    doc(path){ const id=idOf(path); return {
+      async set(data){ const {error}=await T().upsert({user_id:uid,id,data,updated_at:new Date().toISOString()},{onConflict:"user_id,id"}); if(error) throw error; },
+      async delete(){ const {error}=await T().delete().eq("user_id",uid).eq("id",id); if(error) throw error; }
+    }; },
+    collection(){ return { onSnapshot(cb,onErr){
+      let t=null;
+      const load=async()=>{ const {data,error}=await T().select("id,data").eq("user_id",uid); if(error){ onErr?.(error); return; } cb({docs:(data||[]).map(r=>({id:r.id,data:()=>r.data}))}); };
+      load();
+      sb.channel("tracker-"+uid).on("postgres_changes",{event:"*",schema:"meu_ritmo",table:"tracker",filter:"user_id=eq."+uid},()=>{ clearTimeout(t); t=setTimeout(load,400); }).subscribe();
+      window.addEventListener("focus",()=>{ clearTimeout(t); t=setTimeout(load,200); });
+    } }; }
+  };
+}
+function acctUi(sb,session){
+  const box=$("acct"); if(!box||!sb) return; box.hidden=false;
+  const msg=t=>{ $("acctMsg").textContent=t; $("acctMsg").hidden=!t; };
+  if(session){ $("acctOut").hidden=true; $("acctIn").hidden=false; $("acctWho").textContent=session.user.email||""; }
+  $("acctForm").onsubmit=async e=>{ e.preventDefault(); msg("Entrando…");
+    const {error}=await sb.auth.signInWithPassword({email:$("acctEmail").value.trim(),password:$("acctPass").value});
+    if(error) msg(/confirm/i.test(error.message)?"Confirme o e-mail pelo link que chegou na sua caixa de entrada e tente de novo.":"Não consegui entrar: e-mail ou senha incorretos."); };
+  $("acctSignup").onclick=async ()=>{ const email=$("acctEmail").value.trim(), password=$("acctPass").value;
+    if(!email||password.length<6){ msg("Preencha o e-mail e uma senha com pelo menos 6 caracteres."); return; }
+    msg("Criando conta…"); const {data,error}=await sb.auth.signUp({email,password});
+    if(error) msg("Não consegui criar a conta: "+error.message); else if(!data.session) msg("Conta criada. Abra o e-mail de confirmação, clique no link e depois entre aqui."); };
+  $("acctLogout").onclick=async ()=>{ await sb.auth.signOut(); };
+}
 (async ()=>{
   try{ db=await claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){
+    let sb=null, session=null;
+    try{ sb=window.supabase?.createClient(SB_URL,SB_KEY); session=(await sb?.auth.getSession())?.data?.session||null; }catch(e){ sb=null; }
+    if(sb){ acctUi(sb,session); sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_IN"&&!session) location.reload(); if(ev==="SIGNED_OUT") location.reload(); }); }
+    if(session) db=supaDb(sb,session.user.id);
+  }
   if(!db){ loadLocal(); loadAgLocal(); render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
   const timer=setTimeout(()=>{ $("storeNote").textContent="Demorando para carregar seus dias…"; },10000);
   db.collection("tracker").onSnapshot(snap=>{
