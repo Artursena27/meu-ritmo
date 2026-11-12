@@ -333,7 +333,7 @@ body[data-g="home"] .controls{display:none}
 .wday .btn{margin-top:auto;padding:6px 8px;font-size:12px}
 @media (max-width:1020px){ .wgrid{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (max-width:900px){ .aggrid{grid-template-columns:1fr} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .wsum{grid-template-columns:1fr} }
-@media (max-width:620px){ .wgrid{grid-template-columns:1fr} .fform{grid-template-columns:1fr} .agtitle h2{font-size:21px} .kpi .v{font-size:26px} #views svg{display:none} #views button{padding:7px 11px} }
+@media (max-width:620px){ .wgrid{grid-template-columns:1fr} .fform{grid-template-columns:1fr} .agtitle h2{font-size:21px} .kpi .v{font-size:26px} #views svg{display:none} #views .homeb svg{display:block} #views button{padding:7px 11px} }
 @media (max-width:1020px) and (min-width:761px){ .cal{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;padding:16px}
@@ -378,6 +378,56 @@ body[data-g="home"] .controls{display:none}
 .onb-grid .wide{grid-column:1/-1}
 .onb-dias{width:max-content;max-width:100%;flex-wrap:wrap;margin-top:5px}
 .onb-f{display:flex;justify-content:flex-end}
+/* Rotina: captura rápida, agora/próximo, checklist, quadro, hábitos e foco (ideias do Trello e do Notion) */
+.nows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nowc{border:1px solid var(--edge2);border-left:4px solid var(--c,var(--neon));border-radius:18px;padding:12px 14px;background:linear-gradient(135deg,rgba(180,77,255,.14),rgba(255,255,255,.03));display:flex;flex-direction:column;gap:3px;min-width:0}
+.nowc span{font-size:12.5px;color:var(--muted)}
+.nowc .lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nowc b{font-family:var(--display);font-size:19px;line-height:1.2}
+.nowc.next{background:var(--glass);border-color:var(--edge);border-left-color:var(--c,var(--edge2))}
+.qcap{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px dashed var(--edge2);border-radius:16px;padding:10px 12px;background:rgba(0,0,0,.2)}
+.qcap input{flex:1 1 240px;min-width:0}
+.qcap .btn{display:inline-flex;align-items:center;gap:5px}
+.qcap .btn svg.i{width:15px;height:15px}
+.capn{flex-basis:100%;margin:0;font-size:12.5px;color:var(--ok)}
+.inbox .trow{border-left-color:var(--info)}
+.subs{flex-basis:100%;display:flex;flex-direction:column;gap:5px;padding:6px 0 2px 38px}
+.sbi{display:flex;gap:8px;align-items:center;font-size:13px}
+.sbi.ok span{text-decoration:line-through;opacity:.55}
+.sbi .ck{width:22px;height:22px;border-radius:7px}
+.sbi .ck svg.i{width:12px;height:12px}
+.sbi span{flex:1;min-width:0}
+.sbi .ibtn{height:26px}
+.subadd{display:flex;gap:6px}
+.subadd input{flex:1;min-width:0;padding:6px 9px;font-size:13px}
+.kan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.kcol{background:var(--glass);border:1px solid var(--edge);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:160px}
+.kcol.dropok{border-color:var(--neon);background:rgba(180,77,255,.1)}
+.kcol h3{font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.kcol h3 small{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500}
+.kcard{border:1px solid var(--edge);border-left:3px solid var(--c);border-radius:12px;padding:9px 10px;background:rgba(0,0,0,.25);display:flex;flex-direction:column;gap:6px;cursor:grab}
+.kcard.dragging{opacity:.4}
+.kcard b{font-size:13.5px;line-height:1.3}
+.kcard.done b{text-decoration:line-through;opacity:.6}
+.kcard .km{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.kcard .ka{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.kcard .bar{height:5px}
+.hab{display:grid;grid-template-columns:minmax(84px,1.3fr) repeat(7,minmax(0,1fr)) minmax(34px,.6fr);gap:5px;align-items:center;font-size:12.5px}
+.hab .hh{font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;letter-spacing:.04em}
+.hab .hn{font-weight:700;display:flex;gap:6px;align-items:center;min-width:0}
+.hab .hn svg.i{width:14px;height:14px;color:var(--neon)}
+.hab .hc{height:26px;border-radius:8px;background:var(--glass2);display:grid;place-items:center;color:var(--dim);font-size:12px;font-weight:700}
+.hab .hc.ok{background:rgba(62,232,165,.2);color:var(--ok)}
+.hab .hc.part{background:rgba(255,197,71,.16);color:var(--warn)}
+.hab .hc.miss{background:rgba(255,92,134,.12);color:var(--bad)}
+.hab .hc.today{box-shadow:0 0 0 1px var(--neon)}
+.hab .hc svg.i{width:13px;height:13px}
+.hab .ht{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+.foco{display:flex;flex-direction:column;gap:7px}
+.focr{display:flex;gap:8px;align-items:center}
+.focr input[type=text]{flex:1;min-width:0}
+.focr.ok input[type=text]{text-decoration:line-through;opacity:.6}
+@media (max-width:620px){ .nows{grid-template-columns:1fr} .kan{grid-template-columns:repeat(3,minmax(250px,1fr));overflow-x:auto;padding-bottom:6px} .subs{padding-left:0} .hab{font-size:11.5px;gap:3px} }
 /* conta (Supabase) */
 .acct{background:var(--glass);border:1px solid var(--edge2);border-radius:18px;padding:12px 14px}
 .acct-in{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
@@ -443,6 +493,7 @@ body[data-g="home"] .controls{display:none}
         <button data-v="home" class="homeb" aria-label="Início"><svg class="i"><use href="#i-home"/></svg></button>
         <button data-v="hoje" data-g="rotina" aria-pressed="false"><svg class="i"><use href="#i-clock"/></svg>Hoje</button>
         <button data-v="agenda" data-g="rotina" aria-pressed="false"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
+        <button data-v="quadro" data-g="rotina" aria-pressed="false"><svg class="i"><use href="#i-check"/></svg>Quadro</button>
         <button data-v="reg" data-g="corpo" aria-pressed="false"><svg class="i"><use href="#i-flame"/></svg>Registro</button>
         <button data-v="menu" data-g="corpo" aria-pressed="false"><svg class="i"><use href="#i-book"/></svg>Cardápio</button>
         <button data-v="treino" data-g="corpo" aria-pressed="false"><svg class="i"><use href="#i-dumbbell"/></svg>Treino</button>
@@ -1101,7 +1152,7 @@ function renderHome(){
   </div>`;
 }
 function render(){
-  const grp = view==="home"?"home":(view==="hoje"||view==="agenda")?"rotina":"corpo";
+  const grp = view==="home"?"home":(view==="hoje"||view==="agenda"||view==="quadro")?"rotina":"corpo";
   document.body.dataset.g=grp;
   $("appTitle").textContent = grp==="home"?"Meu Ritmo":grp==="rotina"?"Meu Ritmo · Rotina":"Meu Ritmo · Corpo";
   $("logoIc").innerHTML = `<use href="#i-${grp==="rotina"?"cal":"flame"}"/>`;
@@ -1116,7 +1167,7 @@ function render(){
   [...$("views").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===view));
   if (view==="treino"){ ["ag","hero","strip","sheet","legend","weekNav"].forEach(i=>$(i).hidden=true); renderMfit(); return; }
   $("legend").hidden = view!=="reg";
-  const agv = view==="hoje"||view==="agenda";
+  const agv = view==="hoje"||view==="agenda"||view==="quadro";
   $("ag").hidden=!agv; $("hero").hidden=agv; $("strip").hidden=agv; $("sheet").hidden=agv; $("weekNav").hidden=view==="hoje";
   if (agv){ renderAg(); [["cWeight","weight"],["cHeight","height"],["cAge","age"],["cGoal","goal"]].forEach(([el,k])=>{ if(document.activeElement!==$(el)) $(el).value=settings[k]; }); $("cFactor").value=String(settings.factor); $("cSexo").value=settings.sexo||"m"; return; }
   const today=logicalToday();
@@ -1620,8 +1671,11 @@ function trow(t,day,w,d){
       <button class="ibtn ${run?"run":""}" data-act="timer" aria-label="${run?"Parar":"Iniciar"} cronômetro">${ICON(run?"pause":"play")}<span ${run?`data-timer="${t.timer}"`:""}>${run?"0:00":"Iniciar"}</span></button>
       <span class="logg"><input type="number" min="1" step="5" placeholder="min" data-role="logv" aria-label="Minutos feitos"><button class="ibtn" data-act="log">Lançar</button></span>
       ${t.feito?"":`<select data-act="move" aria-label="Reagendar">${moveOpts(w,d)}</select>`}
+      ${t.metaId||t.kind==="treino"?"":`<button class="ibtn ghost" data-act="subsel">Checklist${(t.subs||[]).length?` ${t.subs.filter(x=>x.ok).length}/${t.subs.length}`:""}</button>`}
       ${t.metaId?"":`<button class="ibtn ghost" data-act="del" aria-label="Excluir tarefa">${ICON("x")}</button>`}
     </div>`}
+    ${agSub===t.id&&!ad?`<div class="subs" data-act="noop">${(t.subs||[]).map(x=>`<div class="sbi ${x.ok?"ok":""}" data-s="${x.id}"><button class="ck ${x.ok?"on":""}" data-act="subtog" aria-label="${x.ok?"Desmarcar":"Marcar"} passo">${x.ok?ICON("check"):""}</button><span>${esc(x.txt)}</span><button class="ibtn ghost" data-act="subdel" aria-label="Apagar passo">${ICON("x")}</button></div>`).join("")}
+      <div class="subadd"><input data-role="subv" placeholder="Novo passo (ex.: exercícios 1 a 10)" aria-label="Novo passo"><button class="ibtn" data-act="subadd">Adicionar</button></div></div>`:""}
   </div>`;
 }
 function metaCard(x,day,w,d){
@@ -1654,6 +1708,126 @@ function fixoForm(f,d,isNew){
       <button class="btn line" data-act="fcancel">Cancelar</button></div>
   </div>`;
 }
+/* ---------- captura rápida, agora/próximo, quadro, hábitos e foco ---------- */
+let agNote=null, agSub=null, inbox={itens:[]};
+const semAcento=t=>String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const WDS=["segunda","terca","quarta","quinta","sexta","sabado","domingo"];
+/* "lista 2 de Física 40min sexta alta" -> tarefa com duração, dia, prioridade, categoria e matéria */
+function parseCaptura(txt,w,d){
+  let s=" "+String(txt||"").replace(/\s+/g," ").trim()+" ";
+  const take=(re,fn)=>{ const m=re.exec(s); if(!m) return null; const v=fn(m); if(v==null) return null; s=s.slice(0,m.index)+" "+s.slice(m.index+m[0].length); return v; };
+  const hm=(h,m)=>+h<24&&+(m||0)<60?String(+h).padStart(2,"0")+":"+String(m||"00").padStart(2,"0"):null;
+  let ini=take(/\s[àa]s\s+(\d{1,2})(?:[:h](\d{2}))?\s*h?(?=\s)/i,m=>hm(m[1],m[2]));
+  if(!ini) ini=take(/\s(\d{1,2}):(\d{2})(?=\s)/,m=>hm(m[1],m[2]));
+  let dur=take(/\s(\d{1,2})\s*(?:horas?|h)(\d{2})?(?:min)?(?=\s)/i,m=>+m[1]*60+(+m[2]||0)||null);
+  if(!dur) dur=take(/\s(\d{1,3})\s*(?:minutos?|min)(?=\s)/i,m=>+m[1]||null);
+  let prio=take(/\s(?:prioridade\s+)?(alta|urgente|importante|baixa)(?=\s)/i,m=>/baixa/i.test(m[1])?"baixa":"alta")||"media";
+  if(/!\s*$/.test(s.trim())){ prio="alta"; s=s.replace(/!+\s*$/," "); }
+  // dia
+  const N=nowInfo(), hoje=dateOf(N.w,N.d), visto=dateOf(w,d), ref=visto>hoje?visto:hoje;
+  let alvo=null, soPrazo=false;
+  const mais=(base,n)=>{ const x=new Date(base); x.setDate(x.getDate()+n); return x; };
+  if(take(/\sdepois de amanh[ãa](?=\s)/i,()=>1)) alvo=mais(hoje,2);
+  else if(take(/\samanh[ãa](?=\s)/i,()=>1)) alvo=mais(hoje,1);
+  else if(take(/\shoje(?=\s)/i,()=>1)) alvo=hoje;
+  else {
+    const dm=take(/\s(at[ée]\s+)?(?:(?:dia|em|no dia)\s+)?(\d{1,2})\/(\d{1,2})(?=\s)/i,m=>({ate:!!m[1],dia:+m[2],mes:+m[3]}));
+    if(dm&&dm.dia>=1&&dm.dia<=31&&dm.mes>=1&&dm.mes<=12){ const x=new Date(hoje.getFullYear(),dm.mes-1,dm.dia); if(x<mais(hoje,-180)) x.setFullYear(x.getFullYear()+1); alvo=x; soPrazo=dm.ate; }
+    else { const wk=take(/\s(at[ée]\s+)?(?:(?:na|no|pra|para|essa|esta|este|próxima|proxima|próximo|proximo)\s+)?(segunda|ter[çc]a|quarta|quinta|sexta|s[áa]bado|domingo|seg|qua|qui|sex|s[áa]b)(?:-feira)?(?=\s)/i,m=>({ate:!!m[1],k:semAcento(m[2])}));
+      if(wk){ const idx=WDS.findIndex(n=>n.startsWith(wk.k)); const rd=wdOf(ref).d; alvo=mais(ref,(idx-rd+7)%7); soPrazo=wk.ate; } }
+  }
+  // categoria e matéria
+  const mats=new Set(); Object.values(rotina.dias||{}).forEach(x=>(x.metas||[]).forEach(m=>m.materia&&mats.add(m.materia)));
+  const sa=semAcento(s); let materia=null;
+  for(const m of mats){ const k=semAcento(m).split(" ")[0]; if(k.length>=3&&new RegExp("(^|[^a-z])"+k+"([^a-z]|$)").test(sa)){ materia=m; break; } }
+  const cat=materia||/(prova|lista|exerc|estud|aula|seminario|faculdade|revis|resumo|tcc|artigo)/.test(sa)?"faculdade"
+    :/(reforco|aluno)/.test(sa)?"reforco":/(reuni|relatorio|trabalho|cliente|chefe|planilha|e-?mail)/.test(sa)?"trabalho"
+    :/(jogar|violao|ler |filme|serie|futebol|passear)/.test(sa)?"hobby":"pessoal";
+  let titulo=s.replace(/\s+/g," ").trim();
+  for(let k=0;k<3;k++) titulo=titulo.replace(/^(?:de|da|do|para|pra|por)\s+/i,"").replace(/\s+(?:por|de|da|do|na|no|em|às|as|a|para|pra|com|durante|até|ate)$/i,"").trim();
+  titulo=titulo?titulo.charAt(0).toUpperCase()+titulo.slice(1):"Tarefa";
+  let tw=w, td=d;
+  if(alvo&&!soPrazo){ const r=wdOf(alvo); if(r.w>=0){ tw=r.w; td=r.d; } }
+  return {titulo,dur:Math.min(600,Math.max(5,dur||30)),ini,prio,cat,materia,w:tw,d:td,prazo:alvo?isoOf(alvo):null};
+}
+function addCaptura(p){
+  const day=ensureDay(p.w,p.d);
+  day.tarefas.push({id:uid(),titulo:p.titulo,cat:p.cat,prio:p.prio,dur:p.dur,gasto:0,feito:false,ini:p.ini,prazo:p.prazo,materia:p.materia});
+  saveAg(agId(p.w,p.d));
+  agNote={txt:`Anotada: ${p.titulo} · ${DAYS[p.d].toLowerCase()} ${ddmm(dateOf(p.w,p.d))}${p.ini?" às "+p.ini:""} · ${durTxt(p.dur)}${p.prio==="alta"?" · prioridade alta":""}`,w:p.w,d:p.d};
+}
+function saveInbox(){ if(db) db.doc("tracker/inbox").set({itens:inbox.itens}).catch(()=>{}); }
+
+/* faixa Agora / Próximo */
+function nowStrip(day,fixos,nowM){
+  const col=c=>(CATS[c]||CATS.pessoal)[1];
+  const fx=fixos.filter(f=>f.ini&&f.fim).map(f=>({a:toMin(f.ini),b:toMin(f.fim),n:f.titulo,c:col(f.cat),sair:+f.dA?toMin(f.ini)-(+f.dA):null}));
+  const ts=day.tarefas.filter(t=>!t.feito&&!t.adiada&&t._at!=null).map(t=>({a:t._at,b:t._at+Math.max(5,leftOf(t)),n:taskTitle(t,day),c:col(t.cat),sug:t._sug}));
+  const run=day.tarefas.find(t=>t.timer);
+  const cur=run?{n:taskTitle(run,day),c:col(run.cat),b:nowM+Math.max(1,leftOf(run)),run:true}:fx.find(x=>x.a<=nowM&&nowM<x.b)||ts.find(x=>!x.sug&&x.a<=nowM&&nowM<x.b)||null;
+  const nxt=[...fx,...ts].filter(x=>x.a>nowM).sort((x,y)=>x.a-y.a)[0]||null;
+  const em=m=>durTxt(Math.max(0,Math.round(m))), fim=toMin(rotina.fim);
+  const A=cur?`<b>${esc(cur.n)}</b><span>${cur.run?"cronômetro rodando · ":""}até ${fromMin(cur.b)} · faltam ${em(cur.b-nowM)}</span>`
+    :nowM>=fim?`<b>Dia encerrado</b><span>Seu dia vai até ${rotina.fim}. Hora de descansar.</span>`
+    :`<b>Tempo livre</b><span>${nxt?`até ${fromMin(nxt.sair??nxt.a)} · ${em((nxt.sair??nxt.a)-nowM)}`:`até ${rotina.fim} · ${em(fim-nowM)}`}</span>`;
+  const B=nxt?`<b>${esc(nxt.n)}</b><span>às ${fromMin(nxt.a)} · em ${em(nxt.a-nowM)}${nxt.sair!=null?` · saia às ${fromMin(nxt.sair)}`:""}${nxt.sug?" · sugestão de horário":""}</span>`
+    :`<b>Nada mais hoje</b><span>Sem compromissos nem tarefas com horário.</span>`;
+  return `<div class="nows"><div class="nowc" style="--c:${cur?cur.c:"var(--ok)"}"><span class="lbl">Agora · ${fromMin(nowM)}</span>${A}</div><div class="nowc next" ${nxt?`style="--c:${nxt.c}"`:""}><span class="lbl">Próximo</span>${B}</div></div>`;
+}
+
+/* quadro da semana: A fazer, Fazendo, Feito */
+const kanStatus=t=>t.feito?"done":(t.timer||t.fazendo||((t.gasto||0)>0&&t.fazendo!==false))?"doing":"todo";
+function kanMove(w,d,tid,to){
+  const day=ensureDay(w,d), t=day.tarefas.find(x=>x.id===tid); if(!t) return;
+  stopTimer(t);
+  if(to==="done"){ t.feito=true; delete t.fazendo; }
+  else if(to==="doing"){ t.feito=false; t.fazendo=true; }
+  else { t.feito=false; t.fazendo=false; }
+  saveAg(agId(w,d));
+}
+function agBoardHTML(w){
+  const N=nowInfo(), cols={todo:[],doing:[],done:[]};
+  for(let d=0;d<7;d++){ const day=getDay(w,d); day.tarefas.filter(t=>!t.adiada).forEach(t=>cols[kanStatus(t)].push({t,d,day})); }
+  const ord=(a,b)=>a.d-b.d||PRIO[b.t.prio||"media"][1]-PRIO[a.t.prio||"media"][1];
+  const card=({t,d,day},k)=>{ const c=CATS[t.cat]||CATS.pessoal, pct=t.dur?Math.min(100,Math.round(((t.gasto||0)+runMin(t))/t.dur*100)):0, isT=w===N.w&&d===N.d, subs=t.subs||[];
+    return `<div class="kcard ${k==="done"?"done":""}" style="--c:${c[1]}" draggable="true" data-k="1" data-wd="${w},${d}" data-t="${t.id}">
+      <b>${esc(taskTitle(t,day))}</b>
+      <div class="km"><span class="badge ${isT?"okb":""}">${isT?"Hoje":DAYS[d].slice(0,3)+" "+ddmm(dateOf(w,d))}</span><span class="badge">${c[0]}</span><span class="badge">${t.gasto?durTxt(t.gasto)+" de ":""}${durTxt(t.dur)}</span>${t.prio==="alta"&&!t.metaId&&t.kind!=="treino"?`<span class="badge badb">Alta</span>`:""}${subs.length?`<span class="badge">${subs.filter(x=>x.ok).length}/${subs.length} passos</span>`:""}</div>
+      ${k==="doing"?`<div class="bar"><i style="width:${pct}%"></i></div>`:""}
+      <div class="ka">${k!=="todo"?`<button class="ibtn ghost" data-act="kmove" data-v="${k==="done"?"doing":"todo"}" aria-label="Voltar uma coluna">${ICON("left")}</button>`:""}<button class="ibtn ghost" data-act="kopen">Abrir o dia</button>${k!=="done"?`<button class="ibtn" data-act="kmove" data-v="${k==="todo"?"doing":"done"}">${k==="todo"?"Começar":"Concluir"}</button>`:""}</div>
+    </div>`; };
+  const col=(k,titulo,vazio)=>`<section class="kcol" data-kcol="${k}"><h3>${titulo}<small>${cols[k].length}</small></h3>${cols[k].sort(ord).map(x=>card(x,k)).join("")||`<p class="hint">${vazio}</p>`}</section>`;
+  return `<section class="panelc"><h3>${ICON("check")}Quadro da semana ${w+1}</h3><p class="hint">Todas as tarefas e blocos de estudo da semana. Arraste os cartões entre as colunas ou use os botões.</p></section>
+  <div class="kan">${col("todo","A fazer","Nada pendente nesta semana.")}${col("doing","Fazendo","Traga para cá o que você começou.")}${col("done","Feito","O que você concluir aparece aqui.")}</div>`;
+}
+
+/* hábitos da semana, calculados do que já está registrado na Rotina e no Corpo */
+function habitsHTML(w){
+  const N=nowInfo(), rows=[["book","Estudo"],["dumbbell","Treino"],["moon","Sono 7h+"],["drop","Água"],["check","Tarefas"]].map(([ic,n])=>({ic,n,c:[]}));
+  for(let d=0;d<7;d++){
+    const day=getDay(w,d), rec=days[idOf(w,d)]||{}, fut=w>N.w||(w===N.w&&d>N.d), hoje=w===N.w&&d===N.d;
+    const st=(v,tem)=>!tem?"na":v>=1?"ok":v>0?"part":(fut||hoje)?"":"miss";
+    const mm=day.metas.reduce((a,m)=>a+m.min,0), md=day.metas.reduce((a,m)=>a+metaStats(day,m).feito,0);
+    rows[0].c.push(st(mm?md/mm:0,mm>0));
+    const treinou=!!(rec.treino?.intensidade)||!!day.tarefas.find(t=>t.kind==="treino"&&t.feito);
+    rows[1].c.push(st(treinou?1:0,treinou||(treinoDia(d)&&!day.semTreino)));
+    rows[2].c.push(rec.sono?(rec.sono>=7?"ok":"part"):"");
+    rows[3].c.push(rec.agua?(rec.agua>=waterGoalDay(d)?"ok":"part"):"");
+    const fl=day.tarefas.filter(t=>!t.metaId&&t.kind!=="treino"&&!t.adiada);
+    rows[4].c.push(st(fl.length?fl.filter(t=>t.feito).length/fl.length:0,fl.length>0));
+  }
+  const cel={ok:ICON("check"),part:"~",miss:"×",na:"–","":""}, tip={ok:"feito",part:"parcial",miss:"não feito",na:"não se aplica","":"sem registro"};
+  let h=`<section class="panelc"><h3>${ICON("target")}Hábitos da semana</h3><div class="hab"><span></span>${DAYS.map(n=>`<span class="hh">${n.slice(0,3)}</span>`).join("")}<span class="hh"></span>`;
+  rows.forEach(r=>{ const ok=r.c.filter(x=>x==="ok").length, app=r.c.filter(x=>x!=="na").length;
+    h+=`<span class="hn">${ICON(r.ic)}${r.n}</span>${r.c.map((x,d)=>`<span class="hc ${x} ${w===N.w&&d===N.d?"today":""}" title="${DAYS[d]}: ${tip[x]}">${cel[x]}</span>`).join("")}<span class="ht">${ok}/${app}</span>`; });
+  return h+`</div><p class="hint">Vem do que você já registra: metas de estudo e tarefas da Rotina, treino, sono e água do Corpo. ✓ feito · ~ parcial · × não feito · – não se aplica.</p></section>`;
+}
+function focoHTML(w){
+  const f=getDay(w,0).foco||[];
+  return `<section class="panelc" data-wd="${w},0"><h3>${ICON("target")}Foco da semana</h3><p class="hint">As 3 coisas que mais importam nesta semana. Defina no domingo ou na segunda e marque quando concluir.</p><div class="foco">${[0,1,2].map(i=>{ const x=f[i]||{};
+    return `<div class="focr ${x.ok?"ok":""}"><button class="ck ${x.ok?"on":""}" data-act="focok" data-v="${i}" aria-label="Concluir prioridade ${i+1}">${x.ok?ICON("check"):""}</button><input type="text" data-act="foco" data-v="${i}" value="${esc(x.txt||"")}" placeholder="Prioridade ${i+1}" maxlength="120"></div>`; }).join("")}</div></section>`;
+}
+
 function agDayHTML(w,d,N){
   const isT=w===N.w&&d===N.d, nowM=N.nowM, dt=dateOf(w,d);
   const {day,gaps}=plan(w,d,isT,nowM);
@@ -1678,6 +1852,10 @@ function agDayHTML(w,d,N){
     ${isT?"":`<button class="btn line" data-act="today">Ir para hoje</button>`}
   </div>`;
   cob.forEach(c=>{ h+=`<div class="cob ${c.lvl}">${ICON(c.lvl==="info"||c.lvl==="ok"?"clock":"alert")}<p>${esc(c.txt)}</p>${(c.acts||[]).map(([a,mid,l])=>a==="mmove"?`<span data-m="${mid}"><select data-act="mmove" aria-label="Reagendar o restante">${moveOpts(w,d,"Reagendar o restante…")}</select></span>`:`<button class="btn" data-act="${a}" data-m="${mid}">${l}</button>`).join("")}</div>`; });
+  if(isT) h+=nowStrip(day,fixos,nowM);
+  h+=`<div class="qcap"><input id="cap_t" placeholder="Anote rápido: lista 2 de Física 40min sexta alta" aria-label="Captura rápida de tarefa" autocomplete="off"><button class="btn" data-act="cap">${ICON("plus")}Anotar</button>${agNote?`<p class="capn">${esc(agNote.txt)}${agNote.w!==w||agNote.d!==d?` · <button class="lnk" data-act="capgo">abrir esse dia</button>`:""}</p>`:""}</div>`;
+  if(isT&&inbox.itens.length) h+=`<section class="panelc inbox"><h3>${ICON("bolt")}Caixa de entrada</h3><p class="hint">Anotações que chegaram pelo WhatsApp. Agende no dia sugerido ou descarte.</p><div class="list">${inbox.itens.map(it=>{ const p=parseCaptura(it.txt,w,d);
+    return `<div class="trow" data-in="${esc(it.id)}"><div class="tmain"><b>${esc(it.txt)}</b><span class="tmeta">vira "${esc(p.titulo)}" · ${DAYS[p.d].toLowerCase()} ${ddmm(dateOf(p.w,p.d))}${p.ini?" às "+p.ini:""} · ${durTxt(p.dur)}</span></div><div class="tact"><button class="ibtn" data-act="inadd">Agendar</button><button class="ibtn ghost" data-act="indel" aria-label="Descartar anotação">${ICON("x")}</button></div></div>`; }).join("")}</div></section>`;
   h+=`<div class="kpis">
     <div class="kpi"><span class="lbl">${ICON("book")}Meta de estudo</span>${stMin?`<span class="v">${stPct}%</span><div class="bar"><i style="width:${stPct}%"></i></div><span class="ks">${Math.round(stDone)} de ${stMin} min${stLeft?` · faltam ${Math.round(stLeft)}`:""}</span>`:`<span class="v dim">—</span><span class="ks">Sem meta neste dia</span>`}</div>
     <div class="kpi"><span class="lbl">${ICON("check")}Tarefas da faculdade</span>${ac.total?`<span class="v">${ac.pct}%</span><div class="bar"><i style="width:${ac.pct}%"></i></div><span class="ks">${ac.done} de ${ac.total} concluídas</span>`:`<span class="v dim">—</span><span class="ks">Nenhuma planejada</span>`}</div>
@@ -1759,14 +1937,14 @@ function weekSummary(w){
 }
 function agWeekHTML(w){
   const N=nowInfo(), S=weekSummary(w);
-  let h=`<section class="panelc"><h3>${ICON("chart")}Resumo da semana ${w+1}</h3><div class="wsum"><div class="wmats">`;
+  let h=focoHTML(w)+`<section class="panelc"><h3>${ICON("chart")}Resumo da semana ${w+1}</h3><div class="wsum"><div class="wmats">`;
   Object.entries(S.mats).forEach(([k,v])=>{ const p=v.p?Math.min(100,Math.round(v.r/v.p*100)):100;
     h+=`<div class="wm"><div class="wmh"><b>${esc(k)}</b><span class="mono">${hfmt(v.r/60)} de ${hfmt(v.p/60)}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; });
   if(!Object.keys(S.mats).length) h+=`<p class="hint">Sem metas de estudo nesta semana.</p>`;
   h+=`</div><div class="wnums"><div><span class="v">${S.done}<small>/${S.total}</small></span><span class="ks">tarefas concluídas</span></div><div><span class="v">${S.aDone}<small>/${S.aTot}</small></span><span class="ks">da faculdade</span></div><div><span class="v">${S.adi}</span><span class="ks">adiadas</span></div></div></div>`;
   h+=`<h4 class="sh">Pendências para reagendar</h4>`;
   h+=S.pend.length?`<div class="list">${S.pend.map(p=>`<div class="frow" data-wd="${p.w},${p.d}" data-t="${p.t.id}"><div class="tmain"><b>${esc(taskTitle(p.t,p.day))}</b><span class="tmeta">${DAYS[p.d]} ${ddmm(dateOf(p.w,p.d))} · faltam ${durTxt(leftOf(p.t))}</span></div><select data-act="move" aria-label="Reagendar">${moveOpts(p.w,p.d)}</select></div>`).join("")}</div>`:`<p class="hint">Nada pendente de dias anteriores.</p>`;
-  h+=`</section><div class="wgrid">`;
+  h+=`</section>`+habitsHTML(w)+`<div class="wgrid">`;
   for(let d=0;d<7;d++){ const day=getDay(w,d), dt=dateOf(w,d), isT=w===N.w&&d===N.d;
     h+=`<div class="wday ${isT?"today":""}" data-wd="${w},${d}"><div class="dtop"><div><div class="wd">${DAYS[d]}</div><div class="num">${dt.getDate()}</div></div>${isT?'<span class="tag today">Hoje</span>':""}</div><ul>`;
     fixosOf(day,d).forEach(f=>{ h+=`<li style="--c:${(CATS[f.cat]||CATS.pessoal)[1]}"><span class="mono">${f.ini||"--:--"}</span>${esc(f.titulo)}</li>`; });
@@ -1779,7 +1957,7 @@ function agWeekHTML(w){
 }
 function renderAg(){
   const N=nowInfo(); if(!agSel) agSel={w:N.w,d:N.d};
-  $("ag").innerHTML=view==="agenda"?agWeekHTML(week):agDayHTML(agSel.w,agSel.d,N);
+  $("ag").innerHTML=view==="agenda"?agWeekHTML(week):view==="quadro"?agBoardHTML(week):agDayHTML(agSel.w,agSel.d,N);
   tickTimers();
   if(agFlash){ const el=$("ag").querySelector(`.colr [data-t="${agFlash}"]`)||$("ag").querySelector(`[data-t="${agFlash}"]`); if(el){ el.classList.add("flash"); el.scrollIntoView({block:"center",behavior:"smooth"}); el.querySelector("[data-act=timer]")?.focus(); } agFlash=null; }
 }
@@ -1800,7 +1978,7 @@ function agAct(el){
   const D=()=>ensureDay(w,d), T=()=>D().tarefas.find(t=>t.id===tid), M=()=>D().metas.find(m=>m.id===mid);
   let save=true;
   switch(a){
-    case "nav": { const i=Math.max(0,agSel.w*7+agSel.d+(+el.dataset.v)); agSel={w:Math.floor(i/7),d:i%7}; agEdit=null; save=false; break; }
+    case "nav": { const i=Math.max(0,agSel.w*7+agSel.d+(+el.dataset.v)); agSel={w:Math.floor(i/7),d:i%7}; agEdit=null; agNote=null; save=false; break; }
     case "today": agSel={w:N.w,d:N.d}; agEdit=null; save=false; break;
     case "opendia": agSel={w,d}; view="hoje"; agEdit=null; render(); return;
     case "registro": openDay(w,d); return;
@@ -1811,6 +1989,17 @@ function agAct(el){
     case "move": { const t=T(); if(!t||!el.value) return; moveTask(w,d,t,el.value); break; }
     case "del": { const day=D(); if(tid==="treino") day.semTreino=true; day.tarefas=day.tarefas.filter(t=>t.id!==tid); agTl=null; break; }
     case "addtreino": { const day=D(); day.semTreino=false; if(!day.tarefas.some(t=>t.kind==="treino")) day.tarefas.push(treinoTask()); break; }
+    case "cap": { const inp=$("cap_t"), tt=inp.value.trim(); if(!tt){ inp.focus(); return; } addCaptura(parseCaptura(tt,w,d)); save=false; break; }
+    case "capgo": if(agNote){ agSel={w:agNote.w,d:agNote.d}; agNote=null; } save=false; break;
+    case "inadd": case "indel": { const iid=el.closest("[data-in]")?.dataset.in, it=inbox.itens.find(x=>String(x.id)===iid); if(!it) return;
+      if(a==="inadd") addCaptura(parseCaptura(it.txt,w,d)); inbox.itens=inbox.itens.filter(x=>x!==it); saveInbox(); save=false; break; }
+    case "subsel": agSub=agSub===tid?null:tid; save=false; break;
+    case "subadd": { const t=T(), v=el.closest(".subadd").querySelector("[data-role=subv]").value.trim(); if(!t||!v) return; (t.subs||(t.subs=[])).push({id:uid(),txt:v.slice(0,160),ok:false}); break; }
+    case "subtog": case "subdel": { const t=T(), sid=el.closest("[data-s]")?.dataset.s; if(!t||!t.subs) return; if(a==="subdel") t.subs=t.subs.filter(x=>x.id!==sid); else { const x=t.subs.find(y=>y.id===sid); if(x) x.ok=!x.ok; } break; }
+    case "kmove": kanMove(w,d,tid,el.dataset.v); save=false; break;
+    case "kopen": agSel={w,d}; view="hoje"; agFlash=tid; render(); return;
+    case "foco": case "focok": { const day=D(), i=+el.dataset.v; if(!Array.isArray(day.foco)) day.foco=[]; for(let k=0;k<3;k++) day.foco[k]=day.foco[k]||{txt:"",ok:false};
+      if(a==="foco"){ day.foco[i].txt=el.value.trim(); if(!day.foco[i].txt) day.foco[i].ok=false; } else { if(!day.foco[i].txt) return; day.foco[i].ok=!day.foco[i].ok; } break; }
     case "noop": return;
     case "tlsel": agTl=agTl===tid?null:tid; agFree=null; save=false; break;
     case "noop": return;
@@ -1860,17 +2049,21 @@ function agAct(el){
   }
   if(save) saveAg(id);
   renderAg();
+  if(a==="subadd") $("ag").querySelector(`.trow[data-t="${tid}"] [data-role=subv]`)?.focus();
+  if(a==="cap") $("cap_t")?.focus();
 }
 (function(){
   const root=$("ag");
   root.addEventListener("click",e=>{ const el=e.target.closest("[data-act]"); if(!el||el.tagName==="SELECT"||el.tagName==="INPUT") return; agAct(el); });
   root.addEventListener("change",e=>{ const el=e.target.closest("[data-act]"); if(el&&(el.tagName==="SELECT"||el.tagName==="INPUT")) agAct(el); });
-  root.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.matches("[data-role=logv],[data-role=mlogv],#nt_t")){ e.preventDefault(); (e.target.closest(".logg,.addt")?.querySelector("[data-act]"))?.click(); } });
+  root.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.matches("[data-role=logv],[data-role=mlogv],#nt_t,#cap_t,[data-role=subv]")){ e.preventDefault(); (e.target.closest(".logg,.addt,.qcap,.subadd")?.querySelector("button[data-act]"))?.click(); } });
   root.addEventListener("focusout",()=>{ setTimeout(()=>{ if(agDirty&&!root.contains(document.activeElement)) safeRender(); },0); });
-  root.addEventListener("dragstart",e=>{ const el=e.target.closest?.("[draggable=true]"); if(!el) return; e.dataTransfer.setData("text/plain",el.dataset.t?"t:"+el.dataset.t:"f:"+el.dataset.f); e.dataTransfer.effectAllowed="move"; el.classList.add("dragging"); });
+  root.addEventListener("dragstart",e=>{ const el=e.target.closest?.("[draggable=true]"); if(!el) return; e.dataTransfer.setData("text/plain",el.dataset.k?"k:"+el.dataset.wd+":"+el.dataset.t:el.dataset.t?"t:"+el.dataset.t:"f:"+el.dataset.f); e.dataTransfer.effectAllowed="move"; el.classList.add("dragging"); });
   root.addEventListener("dragend",()=>{ root.querySelectorAll(".dragging,.dropok").forEach(x=>x.classList.remove("dragging","dropok")); });
-  root.addEventListener("dragover",e=>{ const z=e.target.closest?.("[data-drop]"); if(z){ e.preventDefault(); root.querySelectorAll(".dropok").forEach(x=>x!==z&&x.classList.remove("dropok")); z.classList.add("dropok"); } });
-  root.addEventListener("drop",e=>{ const z=e.target.closest?.("[data-drop]"); if(!z) return; e.preventDefault(); dropAt(z,e.dataTransfer.getData("text/plain")); });
+  root.addEventListener("dragover",e=>{ const z=e.target.closest?.("[data-drop],[data-kcol]"); if(z){ e.preventDefault(); root.querySelectorAll(".dropok").forEach(x=>x!==z&&x.classList.remove("dropok")); z.classList.add("dropok"); } });
+  root.addEventListener("drop",e=>{ const z=e.target.closest?.("[data-drop],[data-kcol]"); if(!z) return; e.preventDefault(); const key=e.dataTransfer.getData("text/plain");
+    if(z.dataset.kcol){ if(key.startsWith("k:")){ const r=key.slice(2), i=r.indexOf(":"), [kw,kd]=r.slice(0,i).split(",").map(Number); kanMove(kw,kd,r.slice(i+1),z.dataset.kcol); renderAg(); } return; }
+    dropAt(z,key); });
   setInterval(tickTimers,1000);
   setInterval(()=>{ if(view==="hoje"&&$("overlay").hidden) safeRender(); },60000);
 })();
@@ -2181,10 +2374,10 @@ function acctUi(sb,session){
   db.collection("tracker").onSnapshot(snap=>{
     clearTimeout(timer); $("storeNote").textContent="";
     const next={}, ag={}; let rot=null, base=null;
-    let temPerfil=false;
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    let temPerfil=false, inb=[];
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
-    days=next; agMerge(ag,rot); safeRender();
+    inbox={itens:inb}; days=next; agMerge(ag,rot); safeRender();
     if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
   },()=>{ clearTimeout(timer); $("storeNote").textContent="Não consegui carregar seus dias. Recarregue a página."; });
 })();
