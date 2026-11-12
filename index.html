@@ -367,6 +367,17 @@ body[data-g="home"] .controls{display:none}
 .mf-ex details p{font-size:13.5px;color:var(--muted);line-height:1.5;margin:8px 0 0}
 .mf-chip{border:1px solid var(--edge);background:rgba(0,0,0,.25);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:#d7a6ff}
 .mf-viewer{display:flex;flex-direction:column;gap:6px;border:1px solid var(--edge);border-radius:18px;overflow:hidden;background:var(--glass);min-width:0}.mf-vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px 0}.mf-vh b{font-size:15px}.mf-viewer iframe{width:100%;height:min(62vh,520px);border:0;display:block;background:transparent}.mf-btn{margin-top:8px;align-self:flex-start;border:1px solid var(--neon);background:transparent;color:#d7a6ff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}.tli.free{cursor:pointer}.tli.free.open{cursor:default;background:rgba(62,232,165,.09)}.frform{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;min-width:0}.frform input[data-role=fr_t]{width:100%}.frform .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.frform select{min-width:0;max-width:100%}
+
+.onb{justify-content:center;align-items:flex-start;overflow-y:auto;padding:24px 12px}
+.onb-card{width:min(640px,100%);background:linear-gradient(180deg,#160a2b,#0b0617);border:1px solid var(--edge2);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.onb-h h2{font-size:24px;font-weight:800}
+.onb-card fieldset{border:1px solid var(--edge);border-radius:16px;padding:12px 14px;margin:0;display:flex;flex-direction:column;gap:8px}
+.onb-card legend{font-family:var(--display);font-weight:700;padding:0 6px}
+.onb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.onb-grid label,.onb-lab{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);font-weight:600}
+.onb-grid .wide{grid-column:1/-1}
+.onb-dias{width:max-content;max-width:100%;flex-wrap:wrap;margin-top:5px}
+.onb-f{display:flex;justify-content:flex-end}
 /* conta (Supabase) */
 .acct{background:var(--glass);border:1px solid var(--edge2);border-radius:18px;padding:12px 14px}
 .acct-in{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
@@ -441,6 +452,7 @@ body[data-g="home"] .controls{display:none}
     <div class="acct-in" id="acctOut">
       <div class="acct-txt"><b>Entre para sincronizar</b><span>Seus dados ficam salvos na sua conta e aparecem no celular e no PC.</span></div>
       <form class="acct-form" id="acctForm" autocomplete="on">
+        <input id="acctNome" type="text" placeholder="Seu nome" autocomplete="name" hidden>
         <input id="acctEmail" type="email" placeholder="E-mail" autocomplete="email" required>
         <input id="acctPass" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required>
         <button class="btn" type="submit" id="acctLogin">Entrar</button>
@@ -482,6 +494,7 @@ body[data-g="home"] .controls{display:none}
       <label for="cWeight">Peso (kg)<input id="cWeight" type="number" step="0.1"></label>
       <label for="cHeight">Altura (cm)<input id="cHeight" type="number"></label>
       <label for="cAge">Idade<input id="cAge" type="number"></label>
+      <label for="cSexo">Sexo (para o basal)<select id="cSexo"><option value="m">Masculino</option><option value="f">Feminino</option></select></label>
       <label for="cFactor">Rotina sem treino
         <select id="cFactor"><option value="1.2">Sentado a maior parte (×1,2)</option><option value="1.3">Anda bastante (×1,3)</option><option value="1.4">Trabalho em pé (×1,4)</option></select></label>
       <label for="cGoal">Meta de déficit (kcal/dia)<input id="cGoal" type="number" step="50"></label>
@@ -494,6 +507,39 @@ body[data-g="home"] .controls{display:none}
     <div class="tablewrap"><table class="base"><thead><tr><th>Alimento</th><th>kcal por medida</th><th>Porção média</th></tr></thead><tbody id="baseRows"></tbody></table></div>
   </details>
   <p class="note" id="storeNote"></p>
+</div>
+
+<div class="overlay onb" id="onb" hidden>
+  <form class="onb-card" id="onbForm">
+    <div class="onb-h"><h2 id="onbTitle">Vamos montar o seu ritmo</h2><p class="hint">Só na primeira vez. Tudo isso pode ser mudado depois em "Meus dados" e na Agenda.</p></div>
+    <fieldset><legend>Você</legend>
+      <div class="onb-grid">
+        <label class="wide">Nome<input id="oNome" type="text" required autocomplete="name"></label>
+        <label>Sexo (para o cálculo do basal)<select id="oSexo"><option value="m">Masculino</option><option value="f">Feminino</option></select></label>
+        <label>Idade<input id="oIdade" type="number" min="10" max="100" required></label>
+        <label>Altura (cm)<input id="oAltura" type="number" min="100" max="230" required></label>
+        <label>Peso (kg)<input id="oPeso" type="number" min="30" max="300" step="0.1" required></label>
+      </div>
+    </fieldset>
+    <fieldset><legend>Objetivo</legend>
+      <div class="onb-grid">
+        <label>Seu dia, fora o treino<select id="oFator"><option value="1.2">Sentado a maior parte</option><option value="1.3">Anda bastante</option><option value="1.4">Trabalho em pé</option></select></label>
+        <label>O que você quer<select id="oMeta"><option value="500">Perder gordura (déficit de 500 kcal)</option><option value="250">Perder devagar (déficit de 250 kcal)</option><option value="0">Manter o peso</option></select></label>
+      </div>
+    </fieldset>
+    <fieldset><legend>Rotina</legend>
+      <div class="onb-grid">
+        <label>Meu dia começa<input id="oIni" type="time" value="07:00" required></label>
+        <label>e termina<input id="oFim" type="time" value="22:30" required></label>
+        <label>Treino (minutos)<input id="oTreinoMin" type="number" min="0" step="5" value="60"></label>
+        <div class="wide"><span class="onb-lab">Dias de treino</span><div class="pillbar sm onb-dias" id="oDias" role="group" aria-label="Dias de treino"></div></div>
+        <label class="wide">Descreva sua rotina<textarea id="oDesc" placeholder="Ex.: trabalho das 8h às 12h de segunda a sexta, faculdade à noite, treino depois do trabalho, sábado livre."></textarea></label>
+      </div>
+      <p class="hint">Os horários fixos (aulas, trabalho) você coloca na Agenda, dia por dia. A descrição fica salva no seu perfil.</p>
+    </fieldset>
+    <p class="err" id="onbErr" hidden></p>
+    <div class="onb-f"><button class="btn" type="submit" id="onbSave">Começar</button></div>
+  </form>
 </div>
 
 <div class="overlay" id="overlay" hidden>
@@ -877,7 +923,11 @@ const TRAIN_MET = {leve:3.5, moderado:5, intenso:6};
 const GROUP_W = {Pernas:1.3, "Glúteo":1.25, Costas:1.1, Peito:1.0, Ombro:0.95, "Bíceps":0.85, "Tríceps":0.85, "Abdômen":0.85};
 function groupFactor(g){ if(!g||!g.length) return 1; return g.reduce((a,x)=>a+(GROUP_W[x]||1),0)/g.length; }
 const CARDIO = {bike:["Bike",7],esteira:["Corrida/esteira",9],caminhada:["Caminhada",3.8],eliptico:["Elíptico",5],escada:["Escada",8.8],natacao:["Natação",7],corda:["Pular corda",11]};
-const DEFAULTS = {weight:80,height:182,age:20,factor:1.2,goal:500};
+const DEFAULTS = {weight:80,height:182,age:20,factor:1.2,goal:500,sexo:"m"};
+let perfil = {};
+const nomeCurto=()=>String(perfil.nome||"").trim().split(/\s+/)[0]||"";
+const chamar=()=>{ const n=nomeCurto(); return n?n+", ":""; };
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 
 let settings = {...DEFAULTS}, days = {}, week = 0, view = "home", openId = null, openD = 0, draft = null, db = null, sample = null;
 const $ = id => document.getElementById(id);
@@ -888,7 +938,7 @@ const ddmm = x => String(x.getDate()).padStart(2,"0")+"/"+String(x.getMonth()+1)
 const idOf = (w,d) => "w"+(w+1)+"d"+d;
 let byName = new Map(FOOD_DB.map(f=>[f.nome,f]));
 
-function bmr(){ return 10*settings.weight + 6.25*settings.height - 5*settings.age + 5; }
+function bmr(){ return 10*settings.weight + 6.25*settings.height - 5*settings.age + (settings.sexo==="f"?-161:5); }
 function calc(day){
   const w = settings.weight, base = bmr()*settings.factor, t = day.treino||{};
   const train = t.intensidade && t.min ? (TRAIN_MET[t.intensidade]*groupFactor(t.grupos)-1)*w*t.min/60 : 0;
@@ -1022,7 +1072,7 @@ function renderHome(){
   const hr=Math.floor(((N.nowM%1440)+1440)%1440/60), saud=hr<12?"Bom dia":hr<18?"Boa tarde":"Boa noite";
   const mes=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"][lt.getMonth()];
   $("home").innerHTML=`
-  <div class="welcome"><span class="hello">${saud}</span><h2>Bem-vindo, <em>Artur</em></h2><p>${DAYS[N.d]}, ${lt.getDate()} de ${mes}</p></div>
+  <div class="welcome"><span class="hello">${saud}</span><h2>${nomeCurto()?`${perfil.sexo==="f"?"Bem-vinda":"Bem-vindo"}, <em>${esc(nomeCurto())}</em>`:"Bem-vindo"}</h2><p>${DAYS[N.d]}, ${lt.getDate()} de ${mes}</p></div>
   <div class="doors">
     <button class="door corpo" data-go="reg">
       <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="gc" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff4fd8" stop-opacity=".55"/><stop offset="1" stop-color="#ff4fd8" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="58" fill="url(#gc)"/><circle cx="60" cy="60" r="40" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/><circle cx="60" cy="60" r="40" fill="none" stroke="url(#gNeon)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(pctE/100*251).toFixed(0)} 251" transform="rotate(-90 60 60)"/><use href="#i-flame" x="42" y="40" width="36" height="36" stroke="#fff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1032,7 +1082,7 @@ function renderHome(){
     </button>
     <button class="door rotina" data-go="hoje">
       <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="gr" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7b2ff7" stop-opacity=".6"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="58" fill="url(#gr)"/><circle cx="60" cy="60" r="40" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/><circle cx="60" cy="60" r="40" fill="none" stroke="url(#gNeon)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(pctS/100*251).toFixed(0)} 251" transform="rotate(-90 60 60)"/><use href="#i-cal" x="42" y="40" width="36" height="36" stroke="#fff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="dk">Rotina</span><h3>Rotina</h3><p>Faculdade, trabalho, reforço e hobbies</p>
+      <span class="dk">Rotina</span><h3>Rotina</h3><p>Compromissos, tarefas e metas</p>
       <span class="dstat">${mMin?`Estudo ${pctS}% da meta`:"Sem meta de estudo hoje"}${nxt?` · próximo: ${esc(taskTitle(nxt,day).split(" · ")[0])} ${fromMin(nxt._at)}`:fx?` · ${esc(fx.titulo)} ${fx.ini}`:""}</span>
       <span class="go">Entrar ${ICON("right")}</span>
     </button>
@@ -1043,7 +1093,7 @@ function render(){
   document.body.dataset.g=grp;
   $("appTitle").textContent = grp==="home"?"Meu Ritmo":grp==="rotina"?"Meu Ritmo · Rotina":"Meu Ritmo · Corpo";
   $("logoIc").innerHTML = `<use href="#i-${grp==="rotina"?"cal":"flame"}"/>`;
-  $("basalLine").textContent = grp==="rotina" ? "Faculdade, trabalho, reforço e hobbies" : grp==="home" ? "Corpo e rotina num lugar só" : `Basal ${fmt(bmr())} kcal · ${String(settings.weight).replace(".",",")} kg · ${settings.height} cm · ${settings.age} anos`;
+  $("basalLine").textContent = grp==="rotina" ? "Compromissos, tarefas e metas" : grp==="home" ? "Corpo e rotina num lugar só" : `Basal ${fmt(bmr())} kcal · ${String(settings.weight).replace(".",",")} kg · ${settings.height} cm · ${settings.age} anos`;
   [...$("views").children].forEach(b=>{ b.hidden = grp==="home" || (b.dataset.g && b.dataset.g!==grp); });
   document.querySelectorAll(".corpoOnly").forEach(x=>x.hidden=grp!=="corpo");
   $("home").hidden = grp!=="home";
@@ -1056,7 +1106,7 @@ function render(){
   $("legend").hidden = view!=="reg";
   const agv = view==="hoje"||view==="agenda";
   $("ag").hidden=!agv; $("hero").hidden=agv; $("strip").hidden=agv; $("sheet").hidden=agv; $("weekNav").hidden=view==="hoje";
-  if (agv){ renderAg(); [["cWeight","weight"],["cHeight","height"],["cAge","age"],["cGoal","goal"]].forEach(([el,k])=>{ if(document.activeElement!==$(el)) $(el).value=settings[k]; }); $("cFactor").value=String(settings.factor); return; }
+  if (agv){ renderAg(); [["cWeight","weight"],["cHeight","height"],["cAge","age"],["cGoal","goal"]].forEach(([el,k])=>{ if(document.activeElement!==$(el)) $(el).value=settings[k]; }); $("cFactor").value=String(settings.factor); $("cSexo").value=settings.sexo||"m"; return; }
   const today=logicalToday();
   const todayIdx=[0,1,2,3,4,5,6].find(d=>dateOf(week,d).getTime()===today.getTime());
   if (selDay===null || selDay.w!==week) selDay={w:week,d:todayIdx??0};
@@ -1136,7 +1186,7 @@ function render(){
       <div class="chartbox">${chartSVG(vals)}<div class="cap"><span>${n} de 7 dias registrados</span><span>Abaixo da linha = déficit</span></div></div>`;
   }
   [["cWeight","weight"],["cHeight","height"],["cAge","age"],["cGoal","goal"]].forEach(([el,k])=>{ if(document.activeElement!==$(el)) $(el).value=settings[k]; });
-  $("cFactor").value=String(settings.factor);
+  $("cFactor").value=String(settings.factor); $("cSexo").value=settings.sexo||"m";
 }
 $("prevW").onclick=()=>{ if(week>0){ week--; render(); } };
 $("nextW").onclick=()=>{ if(week<WEEKS-1){ week++; render(); } };
@@ -1349,6 +1399,7 @@ let cfgTimer;
     clearTimeout(cfgTimer); cfgTimer=setTimeout(()=>{ if(db) db.doc("tracker/settings").set(settings).catch(()=>{}); else saveLocal(); },700);
   });
 });
+$("cSexo").addEventListener("change",()=>{ settings.sexo=$("cSexo").value; render(); clearTimeout(cfgTimer); cfgTimer=setTimeout(()=>{ if(db) db.doc("tracker/settings").set(settings).catch(()=>{}); else saveLocal(); },300); });
 
 /* ================= AGENDA: rotina, tarefas e metas ================= */
 const CATS={faculdade:["Faculdade","#c38bff"],estudo:["Estudo","#6aa8ff"],trabalho:["Trabalho","#ffc547"],reforco:["Reforço","#3ee8a5"],hobby:["Hobby","#ff8a3d"],pessoal:["Pessoal","#ff4fd8"],pausa:["Pausa","#8d84a8"],treino:["Treino","#d7a6ff"]};
@@ -1365,17 +1416,7 @@ function wdOf(dt){ const x=new Date(dt); x.setHours(0,0,0,0); const diff=Math.ro
 const agId=(w,d)=>"ag_w"+(w+1)+"d"+d;
 const art=t=>/^(aula|janta|reuni|prova)/i.test(t)?"da":"do";
 const F=(id,titulo,cat,ini,fim,dA=0,dD=0,ho=false)=>({id,titulo,cat,ini,fim,dA,dD,ho});
-const DEFAULT_ROTINA={inicio:"07:00",fim:"22:30",treino:{min:90,dias:[0,1,2,3,4]},dias:{
-  0:{fixos:[F("seg-fis","Aula de Física","faculdade","","",30,30)],metas:[]},
-  1:{fixos:[F("ter-trab","Trabalho","trabalho","08:00","12:00",30,30),F("ter-alm","Almoço","pausa","12:30","13:15"),F("ter-ref","Aula de reforço","reforco","18:00","19:00")],
-     metas:[{id:"ter-fis",materia:"Física",min:120,tema:"Conteúdo da aula de segunda",modo:"2x1",pref:"tarde"}]},
-  2:{fixos:[F("qua-ho","Home office","trabalho","08:00","12:00",0,0,true),F("qua-alm","Almoço","pausa","12:00","12:30"),F("qua-fis","Aula de Física","faculdade","13:00","15:00",30,30)],
-     metas:[{id:"qua-al",materia:"Álgebra Linear",min:120,tema:"Assunto mais recente",modo:"2x1",pref:"ho"}]},
-  3:{fixos:[F("qui-trab","Trabalho","trabalho","08:00","12:00",30,30),F("qui-alm","Almoço","pausa","12:30","13:15"),F("qui-ref","Aula de reforço","reforco","18:00","19:00")],
-     metas:[{id:"qui-fis",materia:"Física",min:120,tema:"",modo:"2x1",pref:"tarde",auto:"qui"}]},
-  4:{fixos:[F("sex-ho","Home office","trabalho","08:00","12:00",0,0,true),F("sex-alm","Almoço","pausa","12:00","13:00"),F("sex-alg","Aula de Álgebra Linear","faculdade","15:00","17:00",30,30)],
-     metas:[{id:"sex-rf",materia:"Física",min:20,tema:"Revisão leve",modo:"1x",pref:"livre"},{id:"sex-ra",materia:"Álgebra Linear",min:20,tema:"Revisão leve",modo:"1x",pref:"livre"}]},
-  5:{fixos:[],metas:[]},6:{fixos:[],metas:[]}}};
+const DEFAULT_ROTINA={inicio:"07:00",fim:"22:30",treino:{min:60,dias:[0,2,4]},dias:{0:{fixos:[],metas:[]},1:{fixos:[],metas:[]},2:{fixos:[],metas:[]},3:{fixos:[],metas:[]},4:{fixos:[],metas:[]},5:{fixos:[],metas:[]},6:{fixos:[],metas:[]}}};
 const treinoTask=()=>({id:"treino",kind:"treino",titulo:"Treino",cat:"treino",prio:"alta",dur:(rotina.treino||{min:90}).min,gasto:0,feito:false,ini:null});
 const treinoDia=d=>(((rotina.treino||{}).dias)||[]).includes(d);
 function normRot(){ if(!rotina.treino) rotina.treino={min:90,dias:[0,1,2,3,4]}; }
@@ -1491,13 +1532,13 @@ function cobranca(w,d,nowM,day){
     const fits=segs.filter(g=>g.b-g.a>=R);
     const late=day.tarefas.some(t=>t.metaId===mid&&!t.feito&&!t.adiada&&!t.timer&&t.ini&&toMin(t.ini)+5<nowM);
     if(running){ const t=day.tarefas.find(t=>t.timer); out.push({lvl:"ok",txt:`Cronômetro rodando: ${taskTitle(t,day)}. Faltam ${R} min de ${x.m.materia} hoje.`}); }
-    else if(free<R) out.push({lvl:"bad",txt:`Artur, o tempo livre de hoje não cobre os ${R} minutos que faltam${free?"":""}. Estude o que couber agora e reagende o restante.`,acts:[["mstart",mid,"Começar agora"],["mmove",mid]]});
-    else if(late||(fits.length<=1&&cur&&cur.a<=nowM+1)){ const g=cur; out.push({lvl:"warn",txt:`Artur, faltam ${R} minutos de ${x.m.materia}. Você ainda tem uma janela de ${durTxt(g.b-g.a)} ${g.next?`antes ${art(g.next.titulo)} ${g.next.titulo.toLowerCase()}`:"até o fim do dia"}. Comece agora.`,acts:[["mstart",mid,"Começar agora"],["mfit",mid,"Encaixar o restante"]]}); }
+    else if(free<R) out.push({lvl:"bad",txt:`${chamar()?chamar()+"o":"O"} tempo livre de hoje não cobre os ${R} minutos que faltam${free?"":""}. Estude o que couber agora e reagende o restante.`,acts:[["mstart",mid,"Começar agora"],["mmove",mid]]});
+    else if(late||(fits.length<=1&&cur&&cur.a<=nowM+1)){ const g=cur; out.push({lvl:"warn",txt:`${chamar()?chamar()+"faltam":"Faltam"} ${R} minutos de ${x.m.materia}. Você ainda tem uma janela de ${durTxt(g.b-g.a)} ${g.next?`antes ${art(g.next.titulo)} ${g.next.titulo.toLowerCase()}`:"até o fim do dia"}. Comece agora.`,acts:[["mstart",mid,"Começar agora"],["mfit",mid,"Encaixar o restante"]]}); }
     else { const bl=day.tarefas.filter(t=>t.metaId===mid&&!t.feito&&!t.adiada&&t._at!=null).sort((a,b)=>a._at-b._at);
       if(bl.length){ const a=bl[0]._at, b=bl[bl.length-1]._at+leftOf(bl[bl.length-1]);
         out.push({lvl:"info",txt:`${x.m.materia}: previsto das ${fromMin(a)} às ${fromMin(b)}. Faltam ${R} min.`}); } }
   }
-  if(endDay&&ac.total&&ac.pct<100) out.push({lvl:ac.pct<50?"bad":"warn",txt:`Artur, você concluiu ${ac.pct<50?"só ":""}${ac.pct}% das tarefas da faculdade hoje. Abra a próxima pendência e comece por ela.`,acts:[["next","","Abrir a próxima pendência"]]});
+  if(endDay&&ac.total&&ac.pct<100) out.push({lvl:ac.pct<50?"bad":"warn",txt:`${chamar()?chamar()+"você":"Você"} concluiu ${ac.pct<50?"só ":""}${ac.pct}% das tarefas da faculdade hoje. Abra a próxima pendência e comece por ela.`,acts:[["next","","Abrir a próxima pendência"]]});
   return out;
 }
 
@@ -1721,7 +1762,7 @@ function agWeekHTML(w){
     day.metas.forEach(m=>{ const s=metaStats(day,m); h+=`<div class="wmeta"><span>${esc(m.materia)} · ${durTxt(m.min)}</span><b>${s.pct}%</b></div>`; });
     const ts=day.tarefas.filter(t=>!t.metaId&&!t.adiada); if(ts.length) h+=`<div class="wmeta"><span>${ts.length} ${ts.length===1?"tarefa":"tarefas"}</span><b>${ts.filter(t=>t.feito).length} feitas</b></div>`;
     h+=`<button class="btn line" data-act="opendia">Abrir dia</button></div>`; }
-  h+=`</div><section class="panelc"><h3>${ICON("user")}Rotina</h3><div class="row"><label class="tlab">Meu dia começa <input type="time" data-act="rot" data-v="inicio" value="${rotina.inicio}"></label><label class="tlab">e termina <input type="time" data-act="rot" data-v="fim" value="${rotina.fim}"></label></div><div class="row"><label class="tlab">${ICON("dumbbell")}Treino <input type="number" min="5" step="5" data-act="rtmin" value="${rotina.treino.min}" aria-label="Minutos de treino"> min nos dias</label><div class="pillbar sm" role="group" aria-label="Dias de treino">${DAYS.map((n,i)=>`<button data-act="rtdia" data-v="${i}" aria-pressed="${rotina.treino.dias.includes(i)}">${n.slice(0,3)}</button>`).join("")}</div></div><p class="hint">As janelas livres e as sugestões usam esse horário. Para mudar um compromisso, abra o dia e escolha "só neste dia" ou "toda semana". Segunda ainda está em aberto: falta o horário da aula de Física e o resto da rotina.</p></section>`;
+  h+=`</div><section class="panelc"><h3>${ICON("user")}Rotina</h3><div class="row"><label class="tlab">Meu dia começa <input type="time" data-act="rot" data-v="inicio" value="${rotina.inicio}"></label><label class="tlab">e termina <input type="time" data-act="rot" data-v="fim" value="${rotina.fim}"></label></div><div class="row"><label class="tlab">${ICON("dumbbell")}Treino <input type="number" min="5" step="5" data-act="rtmin" value="${rotina.treino.min}" aria-label="Minutos de treino"> min nos dias</label><div class="pillbar sm" role="group" aria-label="Dias de treino">${DAYS.map((n,i)=>`<button data-act="rtdia" data-v="${i}" aria-pressed="${rotina.treino.dias.includes(i)}">${n.slice(0,3)}</button>`).join("")}</div></div><p class="hint">As janelas livres e as sugestões usam esse horário. Para mudar um compromisso, abra o dia e escolha "só neste dia" ou "toda semana".</p></section>`;
   return h;
 }
 function renderAg(){
@@ -1943,6 +1984,36 @@ $("mfit").addEventListener("click",e=>{
 /* início */
 (()=>{ const t=logicalToday(); week=Math.min(WEEKS-1,Math.max(0,Math.floor((t-START)/(7*864e5)))); })();
 render();
+/* primeiro acesso */
+let onbVisto=false;
+function abrirOnb(){
+  const u=window.__sbUser||{}, md=u.user_metadata||{};
+  $("oNome").value=perfil.nome||md.nome||"";
+  $("oSexo").value=settings.sexo||"m"; $("oIdade").value=settings.age||""; $("oAltura").value=settings.height||""; $("oPeso").value=settings.weight||"";
+  $("oFator").value=String(settings.factor||1.2); $("oMeta").value=["500","250","0"].includes(String(settings.goal))?String(settings.goal):"500";
+  $("oIni").value=rotina.inicio||"07:00"; $("oFim").value=rotina.fim||"22:30"; $("oTreinoMin").value=(rotina.treino||{}).min??60;
+  const sel=new Set(((rotina.treino||{}).dias)||[]);
+  $("oDias").innerHTML=DAYS.map((n,i)=>`<button type="button" data-d="${i}" aria-pressed="${sel.has(i)}">${n.slice(0,3)}</button>`).join("");
+  $("oDesc").value=perfil.descricao||"";
+  $("onbErr").hidden=true; $("onb").hidden=false; document.body.style.overflow="hidden"; setTimeout(()=>$("oNome").focus(),50);
+}
+$("oDias").addEventListener("click",e=>{ const b=e.target.closest("button[data-d]"); if(b) b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true"); });
+$("onbForm").addEventListener("submit",async e=>{
+  e.preventDefault(); const btn=$("onbSave"); btn.disabled=true; $("onbErr").hidden=true;
+  const dias=[...$("oDias").querySelectorAll("button[aria-pressed=true]")].map(b=>+b.dataset.d).sort();
+  settings={...DEFAULTS,...settings, sexo:$("oSexo").value, age:+$("oIdade").value, height:+$("oAltura").value, weight:+$("oPeso").value, factor:+$("oFator").value, goal:+$("oMeta").value};
+  perfil={...perfil, nome:$("oNome").value.trim(), sexo:$("oSexo").value, descricao:$("oDesc").value.trim(), atualizadoEm:new Date().toISOString()};
+  if(!perfil.criadoEm) perfil.criadoEm=perfil.atualizadoEm;
+  rotina.inicio=$("oIni").value||"07:00"; rotina.fim=$("oFim").value||"22:30"; rotina.treino={min:Math.max(0,+$("oTreinoMin").value||0),dias};
+  try{
+    await db.doc("tracker/settings").set(settings);
+    await db.doc("tracker/rotina").set(strip(rotina));
+    await db.doc("tracker/perfil").set(perfil);
+    $("onb").hidden=true; document.body.style.overflow=""; render();
+  }catch(err){ $("onbErr").textContent="Não consegui salvar. Confira a internet e tente de novo."; $("onbErr").hidden=false; }
+  finally{ btn.disabled=false; }
+});
+
 /* Supabase: projeto Automação do carro, schema meu_ritmo */
 const SB_URL="https://agdyspfoupflwdesemdl.supabase.co", SB_KEY="sb_publishable_BiPX3KYCfAGIgLmHmfaI0w_J0XhyyAD";
 function supaDb(sb,uid){
@@ -1969,10 +2040,11 @@ function acctUi(sb,session){
   $("acctForm").onsubmit=async e=>{ e.preventDefault(); msg("Entrando…");
     const {error}=await sb.auth.signInWithPassword({email:$("acctEmail").value.trim(),password:$("acctPass").value});
     if(error) msg(/confirm/i.test(error.message)?"Confirme o e-mail pelo link que chegou na sua caixa de entrada e tente de novo.":"Não consegui entrar: e-mail ou senha incorretos."); };
-  $("acctSignup").onclick=async ()=>{ const email=$("acctEmail").value.trim(), password=$("acctPass").value;
-    if(!email||password.length<6){ msg("Preencha o e-mail e uma senha com pelo menos 6 caracteres."); return; }
-    msg("Criando conta…"); const {data,error}=await sb.auth.signUp({email,password});
-    if(error) msg("Não consegui criar a conta: "+error.message); else if(!data.session) msg("Conta criada. Abra o e-mail de confirmação, clique no link e depois entre aqui."); };
+  $("acctSignup").onclick=async ()=>{ const email=$("acctEmail").value.trim(), password=$("acctPass").value, nome=$("acctNome").value.trim();
+    if($("acctNome").hidden){ $("acctNome").hidden=false; $("acctLogin").hidden=true; $("acctNome").focus(); msg("Preencha nome, e-mail e uma senha (mínimo de 6 caracteres) e clique em Criar conta."); return; }
+    if(!nome||!email||password.length<6){ msg("Preencha nome, e-mail e uma senha com pelo menos 6 caracteres."); return; }
+    msg("Criando conta…"); const {data,error}=await sb.auth.signUp({email,password,options:{data:{nome},emailRedirectTo:location.origin}});
+    if(error) msg("Não consegui criar a conta: "+error.message); else if(!data.session){ msg("Conta criada. Abra o e-mail de confirmação, clique no link e depois entre aqui."); $("acctNome").hidden=true; $("acctLogin").hidden=false; } };
   $("acctLogout").onclick=async ()=>{ await sb.auth.signOut(); };
 }
 (async ()=>{
@@ -1981,16 +2053,18 @@ function acctUi(sb,session){
     let sb=null, session=null;
     try{ sb=window.supabase?.createClient(SB_URL,SB_KEY); session=(await sb?.auth.getSession())?.data?.session||null; }catch(e){ sb=null; }
     if(sb){ acctUi(sb,session); sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_IN"&&!session) location.reload(); if(ev==="SIGNED_OUT") location.reload(); }); }
-    if(session) db=supaDb(sb,session.user.id);
+    if(session){ db=supaDb(sb,session.user.id); window.__sbUser=session.user; }
   }
   if(!db){ loadLocal(); loadAgLocal(); render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
   const timer=setTimeout(()=>{ $("storeNote").textContent="Demorando para carregar seus dias…"; },10000);
   db.collection("tracker").onSnapshot(snap=>{
     clearTimeout(timer); $("storeNote").textContent="";
     const next={}, ag={}; let rot=null, base=null;
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    let temPerfil=false;
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
     days=next; agMerge(ag,rot); safeRender();
+    if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
   },()=>{ clearTimeout(timer); $("storeNote").textContent="Não consegui carregar seus dias. Recarregue a página."; });
 })();
 </script>
