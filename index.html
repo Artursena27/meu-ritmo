@@ -511,6 +511,14 @@ body[data-g="home"] .controls{display:none}
         <input id="acctPass" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required>
         <button class="btn" type="submit" id="acctLogin">Entrar</button>
         <button class="btn line" type="button" id="acctSignup">Criar conta</button>
+        <button class="btn line" type="button" id="acctEsqueci">Esqueci a senha</button>
+      </form>
+      <form class="acct-form acct-code" id="acctSenhaForm" hidden autocomplete="off">
+        <input id="acctSenhaCod" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Código" aria-label="Código recebido por e-mail" autocomplete="one-time-code">
+        <input id="acctSenhaNova" type="password" placeholder="Nova senha" aria-label="Nova senha" autocomplete="new-password" style="letter-spacing:normal;font-family:inherit;max-width:none">
+        <button class="btn" type="submit" id="acctSenhaOk">Trocar senha</button>
+        <button class="btn line" type="button" id="acctSenhaReenviar">Reenviar e-mail</button>
+        <button class="btn line" type="button" id="acctSenhaVoltar">Voltar</button>
       </form>
       <form class="acct-form acct-code" id="acctCodeForm" hidden autocomplete="off">
         <input id="acctCode" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Código" aria-label="Código de confirmação" autocomplete="one-time-code">
@@ -523,7 +531,8 @@ body[data-g="home"] .controls{display:none}
     </div>
     <div class="acct-in acct-on" id="acctIn" hidden>
       <span class="acct-txt"><b>Sincronizado</b><span id="acctWho"></span></span>
-      <button class="btn line" type="button" id="acctLogout">Sair</button>
+      <span class="acct-form" style="flex:0 1 auto"><button class="btn line" type="button" id="acctZap" hidden>Conectar WhatsApp</button><button class="btn line" type="button" id="acctLogout">Sair</button></span>
+      <p class="acct-msg" id="acctZapMsg" hidden></p>
     </div>
   </section>
 
@@ -2325,7 +2334,7 @@ function acctUi(sb,session){
   let emailPendente="", senhaPendente="", esperaEmail=0, relogio=null;
   const fmtTel=t=>String(t||"").replace(/\D/g,"").replace(/^55(?=\d{10,11}$)/,"");
   const rpc=(fn,args)=>sb.schema("meu_ritmo").rpc(fn,args);
-  const modoCadastro=on=>{ $("acctNome").hidden=!on; $("acctTel").hidden=!on; $("acctLogin").hidden=on; $("acctPass").autocomplete=on?"new-password":"current-password"; };
+  const modoCadastro=on=>{ $("acctNome").hidden=!on; $("acctTel").hidden=!on; $("acctLogin").hidden=on; $("acctEsqueci").hidden=on; $("acctPass").autocomplete=on?"new-password":"current-password"; };
   const botaoEmail=()=>{ const s=Math.ceil((esperaEmail-Date.now())/1000); const b=$("acctViaEmail"); b.disabled=s>0; b.textContent=s>0?`Reenviar e-mail (${s}s)`:"Reenviar e-mail"; if(s<=0&&relogio){ clearInterval(relogio); relogio=null; } };
   const MOTIVO_EMAIL={limite:"Esse cadastro já pediu o código várias vezes. Espere uns minutos ou use o WhatsApp.",conta_nao_encontrada:"Não achei um cadastro esperando confirmação com esse e-mail.",nao_configurado:"O envio por e-mail está fora do ar. Use o WhatsApp."};
   // Manda o código pelo agente (Brevo). O código nunca passa pelo site.
@@ -2338,7 +2347,7 @@ function acctUi(sb,session){
   const pedirCodigo=(email,senha,{zap=true,enviar=true}={})=>{ emailPendente=email; senhaPendente=senha||"";
     $("acctForm").hidden=true; $("acctCodeForm").hidden=false; $("acctCode").value=""; $("acctViaZap").hidden=!(AGENTE_WHATSAPP&&zap); botaoEmail();
     $("acctCode").focus(); if(enviar) return mandarEmail(); };
-  const voltar=()=>{ emailPendente=""; senhaPendente=""; $("acctCodeForm").hidden=true; $("acctForm").hidden=false; modoCadastro(false); msg(""); };
+  const voltar=()=>{ emailPendente=""; senhaPendente=""; $("acctCodeForm").hidden=true; $("acctSenhaForm").hidden=true; $("acctForm").hidden=false; modoCadastro(false); msg(""); };
   $("acctVoltar").onclick=voltar;
   $("acctForm").onsubmit=async e=>{ e.preventDefault();
     if(!$("acctNome").hidden){ $("acctSignup").click(); return; }
@@ -2347,7 +2356,7 @@ function acctUi(sb,session){
     const {error}=await sb.auth.signInWithPassword({email,password:senha});
     if(!error) return;
     if(/confirm/i.test(error.message)){ await pedirCodigo(email,senha); return; }
-    msg(/invalid/i.test(error.message)?"Não consegui entrar: e-mail ou senha incorretos.":"Não consegui entrar agora. Confira a internet e tente de novo."); };
+    msg(/invalid/i.test(error.message)?"Não consegui entrar: e-mail ou senha incorretos. Se esqueceu a senha, clique em Esqueci a senha.":"Não consegui entrar agora. Confira a internet e tente de novo."); };
   const MOTIVO_CONTA={email_invalido:"E-mail inválido.",senha_invalida:"A senha precisa ter de 6 a 72 caracteres.",nome_vazio:"Diga seu nome.",telefone_invalido:"WhatsApp inválido: use DDD + número, ex.: 81 99999-1234.",muitos_cadastros:"Muitos cadastros agora há pouco. Tente de novo em alguns minutos."};
   $("acctSignup").onclick=async ()=>{
     if($("acctNome").hidden){ modoCadastro(true); $("acctNome").focus(); msg("Preencha nome, e-mail e uma senha (mínimo de 6 caracteres). O WhatsApp é opcional. Depois clique em Criar conta."); return; }
@@ -2367,7 +2376,7 @@ function acctUi(sb,session){
         data={ok:true,tem_telefone:!!telefone}; error=null;
       }
       if(error){ msg("Não consegui criar a conta agora. Confira a internet e tente de novo."); return; }
-      if(data?.motivo==="ja_existe"){ modoCadastro(false); msg("Esse e-mail já tem conta. Digite a senha e clique em Entrar."); return; }
+      if(data?.motivo==="ja_existe"){ modoCadastro(false); msg("Esse e-mail já tem conta. Digite a senha e clique em Entrar, ou clique em Esqueci a senha para criar uma nova."); return; }
       if(!data?.ok){ msg(MOTIVO_CONTA[data?.motivo]||"Não consegui criar a conta. Tente de novo."); return; }
       modoCadastro(false);
       const foi=await pedirCodigo(email,password,{zap:!!data.tem_telefone});
@@ -2396,6 +2405,52 @@ function acctUi(sb,session){
       const r=senhaPendente?await sb.auth.signInWithPassword({email:emailPendente,password:senhaPendente}):{error:true};
       if(r.error){ const em=emailPendente; voltar(); $("acctEmail").value=em; msg(data?.ok?"Conta confirmada. Agora é só entrar com seu e-mail e senha.":"Não consegui entrar: e-mail ou senha incorretos."); }
     } finally { confirmando=false; } };
+  /* Esqueci a senha: código por e-mail (pelo agente) e senha nova. */
+  let emailSenha="", esperaSenha=0;
+  const pedirCodigoDeSenha=async ()=>{
+    if(Date.now()<esperaSenha){ msg(`Espere ${Math.ceil((esperaSenha-Date.now())/1000)}s para pedir outro e-mail.`); return false; }
+    msg("Enviando o código por e-mail…"); let j={};
+    try{ const r=await fetch(AGENTE_API+"/api/recuperar-senha",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:emailSenha})}); j=await r.json().catch(()=>({})); }catch(e){ j={}; }
+    if(!j.ok){ msg(j.mensagem||"Não consegui mandar o e-mail agora. Tente de novo em instantes."); return false; }
+    esperaSenha=Date.now()+60000;
+    msg(`Enviamos um código de 6 dígitos para ${emailSenha}. Pode levar 1 minuto; olhe também o spam. Digite o código e a senha nova. Vale ${j.minutos||15} min.`); return true; };
+  $("acctEsqueci").onclick=async ()=>{
+    const email=$("acctEmail").value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg("Digite seu e-mail no campo E-mail e clique de novo em Esqueci a senha."); $("acctEmail").focus(); return; }
+    emailSenha=email; esperaSenha=0; $("acctEsqueci").disabled=true;
+    try{ if(await pedirCodigoDeSenha()){ $("acctForm").hidden=true; $("acctSenhaForm").hidden=false; $("acctSenhaCod").value=""; $("acctSenhaNova").value=""; $("acctSenhaCod").focus(); } }
+    finally{ $("acctEsqueci").disabled=false; } };
+  $("acctSenhaReenviar").onclick=()=>pedirCodigoDeSenha();
+  $("acctSenhaVoltar").onclick=voltar;
+  $("acctSenhaCod").oninput=()=>{ $("acctSenhaCod").value=$("acctSenhaCod").value.replace(/\D/g,"").slice(0,6); };
+  $("acctSenhaForm").onsubmit=async e=>{ e.preventDefault();
+    const cod=$("acctSenhaCod").value.replace(/\D/g,""), nova=$("acctSenhaNova").value;
+    if(cod.length<6){ msg("O código tem 6 dígitos."); return; }
+    if(nova.length<6){ msg("A senha nova precisa ter pelo menos 6 caracteres."); return; }
+    $("acctSenhaOk").disabled=true; msg("Trocando a senha…");
+    try{
+      const {data,error}=await rpc("redefinir_senha",{p_email:emailSenha,p_codigo:cod,p_senha:nova});
+      if(error){ msg("Não consegui trocar a senha agora. Confira a internet e tente de novo."); return; }
+      if(!data?.ok){ msg({expirado:"Código vencido. Clique em Reenviar e-mail.",bloqueado:"Muitas tentativas. Clique em Reenviar e-mail para receber outro código.",sem_codigo:"Peça o código primeiro (Reenviar e-mail).",senha_invalida:"A senha precisa ter de 6 a 72 caracteres.",codigo_errado:`Código errado. Restam ${data?.restam??0} tentativas.`}[data?.motivo]||"Não consegui trocar a senha. Peça outro código."); return; }
+      msg("Senha trocada! Entrando…");
+      const r=await sb.auth.signInWithPassword({email:emailSenha,password:nova});
+      if(r.error){ const em=emailSenha; voltar(); $("acctEmail").value=em; msg("Senha trocada. Agora é só entrar com a senha nova."); }
+    } finally { $("acctSenhaOk").disabled=false; } };
+
+  /* Logado: ligar o WhatsApp à conta, para o assistente lançar no app por lá. */
+  if(session&&AGENTE_WHATSAPP){
+    const zb=$("acctZap"), zm=$("acctZapMsg"); zb.hidden=false;
+    rpc("meu_whatsapp").then(({data})=>{ if(data?.final) zb.textContent=`WhatsApp conectado (final ${data.final})`; }).catch(()=>{});
+    zb.onclick=async ()=>{ zb.disabled=true;
+      try{
+        const {data,error}=await rpc("iniciar_vinculo");
+        zm.hidden=false; zm.textContent="";
+        if(error||!data?.ok){ zm.textContent="Não consegui gerar o código agora. Tente de novo."; return; }
+        const texto="vincular "+data.codigo, a=document.createElement("a");
+        a.href=`https://wa.me/${AGENTE_WHATSAPP}?text=${encodeURIComponent(texto)}`; a.target="_blank"; a.rel="noopener"; a.textContent="Abrir o WhatsApp com a mensagem pronta"; a.style.color="var(--ink)";
+        zm.append(`Para o assistente lançar no seu Meu Ritmo pelo WhatsApp, envie a mensagem "${texto}" para +${AGENTE_WHATSAPP.replace(/^(\d)(\d{3})(\d{3})(\d{4})$/,"$1 ($2) $3-$4")}. Vale ${data.minutos} min. `,a);
+      } finally { zb.disabled=false; } };
+  }
   $("acctLogout").onclick=async ()=>{ await sb.auth.signOut(); };
 }
 (async ()=>{
