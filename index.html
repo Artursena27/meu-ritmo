@@ -420,6 +420,13 @@ body[data-g="home"] .controls{display:none}
 .gb.done{opacity:.45}.gb.done b{text-decoration:line-through}
 .gb.desl{background:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 4px,transparent 4px 8px);border:1px dashed var(--edge2);border-left-width:1px;color:var(--muted);padding:0 4px;font-size:9.5px;cursor:default}
 .gb:hover:not(.desl){z-index:2;outline:2px solid var(--c)}
+.gb[data-g]{cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.gb.gsrc{opacity:.25}
+.gghost{position:fixed;z-index:9999;pointer-events:none;cursor:grabbing;box-shadow:0 12px 30px rgba(0,0,0,.55);outline:2px solid var(--c);transform:rotate(-1.5deg);opacity:.95}
+.gghost .gto{display:block;margin-top:2px;font-weight:800;color:#fff;font-size:11px}
+.gc.galvo{background-color:rgba(180,77,255,.14)}
+.gc .gmark{position:absolute;left:2px;right:2px;border:2px dashed var(--neon);border-radius:9px;pointer-events:none;z-index:4}
+.gc.gnao .gmark{border-color:var(--bad,#ff4f6d)}
 .gnow{position:absolute;left:0;right:0;top:calc(var(--a)*var(--pm));border-top:2px solid var(--bad,#ff4f6d);z-index:3;pointer-events:none}
 .gnow::before{content:"";position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--bad,#ff4f6d)}
 .gfoot{grid-column:1/-1;display:contents}
@@ -1840,14 +1847,14 @@ function agGradeHTML(w){
     const isT=w===N.w&&d===N.d, past=w<N.w||(w===N.w&&d<N.d), {day}=plan(w,d,isT,N.nowM), dt=dateOf(w,d), evs=[];
     fixosOf(day,d).filter(f=>f.ini&&f.fim).forEach(f=>{ const a=toMin(f.ini), b=toMin(f.fim), ok=!!day.presenca?.[f.id];
       if(+f.dA) evs.push({a:a-f.dA,b:a,desl:1,n:"deslocamento"}); if(+f.dD) evs.push({a:b,b:b+(+f.dD),desl:1,n:"deslocamento"});
-      evs.push({a,b,n:f.titulo,c:cor(f.cat),sub:`${f.ini}–${f.fim}`,done:ok,fixo:1}); });
+      evs.push({a,b,n:f.titulo,c:cor(f.cat),sub:`${f.ini}–${f.fim}`,done:ok,fixo:1,g:`f:${f.id}`}); });
     day.tarefas.filter(t=>!t.adiada&&t._at!=null&&!(past&&t._sug)).forEach(t=>{ const a=t._at, len=Math.max(15,t.feito?(t.dur||30):leftOf(t)||t.dur||30);
-      evs.push({a,b:a+len,n:taskTitle(t,day),c:cor(t.cat),sub:`${fromMin(a)} · ${durTxt(t.dur)}${t._sug?" · sugestão":""}`,done:t.feito,sug:t._sug,tid:t.id}); });
+      evs.push({a,b:a+len,n:taskTitle(t,day),c:cor(t.cat),sub:`${fromMin(a)} · ${durTxt(t.dur)}${t._sug?" · sugestão":""}`,done:t.feito,sug:t._sug,tid:t.id,g:t.feito?null:`t:${t.id}`}); });
     lanes(evs.filter(e=>!e.desl)); evs.filter(e=>e.desl).forEach(e=>{ e.lane=0; e.nl=1; });
     const blocos=evs.map(e=>{ const a=Math.max(e.a,s0)-s0, len=Math.min(e.b,s1)-Math.max(e.a,s0); if(len<=0) return "";
       const pos=`--a:${a};--len:${len};--l:calc(${e.lane}*100%/${e.nl} + 2px);--w:calc(100%/${e.nl} - 4px)`;
       if(e.desl) return `<div class="gb desl" style="${pos}" aria-hidden="true"></div>`;
-      return `<div class="gb ${e.sug?"sug":""} ${e.done?"done":""}" style="--c:${e.c};${pos}" data-act="${e.tid?"kopen":"opendia"}" ${e.tid?`data-t="${e.tid}"`:""} title="${esc(e.n)} · ${esc(e.sub)}"><b>${e.done?"✓ ":""}${esc(e.n)}</b>${len>=35?`<i>${esc(e.sub)}</i>`:""}</div>`; }).join("");
+      return `<div class="gb ${e.sug?"sug":""} ${e.done?"done":""}" style="--c:${e.c};${pos}" data-act="${e.tid?"kopen":"opendia"}" ${e.tid?`data-t="${e.tid}"`:""} ${e.g?`data-g="${e.g}"`:""} title="${esc(e.n)} · ${esc(e.sub)}"><b>${e.done?"✓ ":""}${esc(e.n)}</b>${len>=35?`<i>${esc(e.sub)}</i>`:""}</div>`; }).join("");
     const agoraL=isT&&N.nowM>=s0&&N.nowM<=s1?`<div class="gnow" style="--a:${N.nowM-s0}"></div>`:"";
     head+=`<div class="gh ${isT?"today":""}" data-wd="${w},${d}" data-act="opendia" title="Abrir o dia"><div class="wd">${DAYS[d].slice(0,3)}</div><div class="num">${dt.getDate()}</div>${isT?"<small>hoje</small>":""}</div>`;
     cols+=`<div class="gc ${isT?"today":""}" data-wd="${w},${d}" style="height:calc(${H}*var(--pm))">${blocos}${agoraL}</div>`;
@@ -1858,11 +1865,84 @@ function agGradeHTML(w){
   for(let m=s0+60;m<s1;m+=60) gut+=`<span style="top:calc(${m-s0}*var(--pm))">${fromMin(m)}</span>`;
   gut+=`</div>`;
   const leg=Object.entries(CATS).filter(([k])=>k!=="estudo"||true).map(([k,[l,c]])=>`<span><i style="--c:${c}"></i>${l}</span>`).join("")+`<span><i class="sugi"></i>Sugestão de horário</span>`;
-  return `<div class="grade">${head}${gut}${cols}${foot}</div><div class="glg" style="margin-top:8px">${leg}</div>`;
+  return `<div class="grade" data-s0="${s0}" data-s1="${s1}">${head}${gut}${cols}${foot}</div><div class="glg" style="margin-top:8px">${leg}</div>`;
+}
+/* arrastar blocos na grade (mouse e toque) */
+let gDrag=null, gJust=0;
+function gAlvo(x,y){
+  const g=gDrag.grade, cols=[...g.querySelectorAll(".gc")], s0=+g.dataset.s0, s1=+g.dataset.s1, pm=gDrag.pm;
+  const c=cols.find(c=>{ const r=c.getBoundingClientRect(); return x>=r.left&&x<r.right; }); if(!c) return null;
+  const r=c.getBoundingClientRect(); let m=s0+(y-gDrag.dy-r.top)/pm; m=Math.round(m/15)*15; m=Math.max(s0,Math.min(s1-15,m));
+  const [w,d]=c.dataset.wd.split(",").map(Number); return {c,w,d,m};
+}
+function gIniciar(){
+  const st=gDrag, el=st.el, r=el.getBoundingClientRect();
+  st.started=true; st.dy=st.y0-r.top; st.dx=st.x0-r.left;
+  const gh=el.cloneNode(true); gh.className="gb gghost"; gh.style.cssText=`--c:${el.style.getPropertyValue("--c")};left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+  gh.insertAdjacentHTML("beforeend",`<span class="gto"></span>`); document.body.appendChild(gh); st.ghost=gh;
+  el.classList.add("gsrc"); try{ el.setPointerCapture(st.pid); }catch(e){} if(navigator.vibrate) try{ navigator.vibrate(15); }catch(e){}
+  gMover(st.x0,st.y0);
+}
+function gMover(x,y){
+  const st=gDrag; st.x=x; st.y=y;
+  st.ghost.style.left=(x-st.dx)+"px"; st.ghost.style.top=(y-st.dy)+"px";
+  st.grade.querySelectorAll(".galvo,.gnao").forEach(c=>c.classList.remove("galvo","gnao")); st.grade.querySelectorAll(".gmark").forEach(m=>m.remove());
+  const a=gAlvo(x,y); st.alvo=a; const lbl=st.ghost.querySelector(".gto");
+  if(!a){ lbl.textContent=""; return; }
+  const [w0,d0]=st.wd, outro=a.w!==w0||a.d!==d0, proibido=st.key.startsWith("f:")&&outro;
+  a.c.classList.add("galvo"); if(proibido) a.c.classList.add("gnao");
+  const len=st.len; a.c.insertAdjacentHTML("beforeend",`<div class="gmark" style="top:calc(${a.m-(+st.grade.dataset.s0)}*var(--pm));height:calc(${len}*var(--pm))"></div>`);
+  lbl.textContent=proibido?"Compromisso fixo: só no mesmo dia":`→ ${outro?DAYS[a.d].slice(0,3)+" ":""}${fromMin(a.m)}`;
+  // rolagem automática perto das bordas
+  const R=st.grade.getBoundingClientRect(), E=40, V=14;
+  if(y>R.bottom-E) st.grade.scrollTop+=V; else if(y<R.top+E+40) st.grade.scrollTop-=V;
+  if(x>R.right-E) st.grade.scrollLeft+=V; else if(x<R.left+E+40) st.grade.scrollLeft-=V;
+}
+function gLimpar(){
+  const st=gDrag; if(!st) return; clearTimeout(st.timer);
+  st.ghost?.remove(); st.el.classList.remove("gsrc");
+  st.grade.querySelectorAll(".galvo,.gnao").forEach(c=>c.classList.remove("galvo","gnao")); st.grade.querySelectorAll(".gmark").forEach(m=>m.remove());
+  gDrag=null;
+}
+function gSoltar(){
+  const st=gDrag, a=st.alvo; gLimpar(); gJust=Date.now(); if(!a) return;
+  const [w,d]=st.wd, outro=a.w!==w||a.d!==d, id=st.key.slice(2), day=ensureDay(w,d), hora=fromMin(a.m);
+  if(st.key.startsWith("t:")){
+    const t=day.tarefas.find(x=>x.id===id); if(!t) return;
+    if(!outro){ if(t.ini===hora&&!t._sug){ renderAg(); return; } t.ini=hora; saveAg(agId(w,d)); }
+    else { moveTask(w,d,t,isoOf(dateOf(a.w,a.d))); const nd=ensureDay(a.w,a.d), nova=nd.tarefas[nd.tarefas.length-1]; if(nova) nova.ini=hora; saveAg(agId(w,d)); saveAg(agId(a.w,a.d)); }
+  } else {
+    if(outro){ renderAg(); return; }
+    day.fixos=clone(fixosOf(day,d)); const f=day.fixos.find(x=>x.id===id); if(!f||!f.ini||!f.fim) return;
+    const len=toMin(f.fim)-toMin(f.ini); if(f.ini===hora){ renderAg(); return; }
+    f.ini=hora; f.fim=fromMin(a.m+len); day.eventos.push({t:Date.now(),txt:`${f.titulo} movido só neste dia para ${f.ini}`}); saveAg(agId(w,d));
+  }
+  renderAg();
+}
+function gradeDrag(root){
+  root.addEventListener("pointerdown",e=>{
+    const el=e.target.closest?.(".grade .gb[data-g]"); if(!el||e.button>0) return;
+    const grade=el.closest(".grade"), col=el.closest(".gc");
+    gDrag={el,grade,key:el.dataset.g,wd:col.dataset.wd.split(",").map(Number),pid:e.pointerId,x0:e.clientX,y0:e.clientY,touch:e.pointerType!=="mouse",started:false,
+      pm:parseFloat(getComputedStyle(grade).getPropertyValue("--pm"))||1,len:Math.round(el.getBoundingClientRect().height/(parseFloat(getComputedStyle(grade).getPropertyValue("--pm"))||1))};
+    if(gDrag.touch) gDrag.timer=setTimeout(()=>{ if(gDrag&&!gDrag.started) gIniciar(); },300);
+  });
+  window.addEventListener("pointermove",e=>{
+    if(!gDrag||e.pointerId!==gDrag.pid) return;
+    const dist=Math.hypot(e.clientX-gDrag.x0,e.clientY-gDrag.y0);
+    if(!gDrag.started){ if(gDrag.touch){ if(dist>8){ clearTimeout(gDrag.timer); gDrag=null; } return; } if(dist<5) return; gIniciar(); }
+    e.preventDefault(); gMover(e.clientX,e.clientY);
+  },{passive:false});
+  window.addEventListener("pointerup",e=>{ if(!gDrag||e.pointerId!==gDrag.pid) return; if(gDrag.started) gSoltar(); else { clearTimeout(gDrag.timer); gDrag=null; } });
+  window.addEventListener("pointercancel",()=>{ if(gDrag){ gLimpar(); renderAg(); } });
+  window.addEventListener("touchmove",e=>{ if(gDrag?.started) e.preventDefault(); },{passive:false});
+  window.addEventListener("keydown",e=>{ if(e.key==="Escape"&&gDrag?.started){ gLimpar(); renderAg(); } });
+  root.addEventListener("click",e=>{ if(Date.now()-gJust<350){ e.stopPropagation(); e.preventDefault(); } },true);
+  root.addEventListener("contextmenu",e=>{ if(e.target.closest?.(".grade .gb[data-g]")) e.preventDefault(); });
 }
 function agBoardHTML(w){
   const bar=`<section class="panelc"><div class="qbar"><h3 style="margin:0">${ICON("check")}Quadro da semana ${w+1}</h3><div class="pillbar sm" role="group" aria-label="Formato do quadro"><button data-act="qmode" data-v="grade" aria-pressed="${qMode==="grade"}">Grade por horário</button><button data-act="qmode" data-v="status" aria-pressed="${qMode!=="grade"}">A fazer · Feito</button></div></div>
-    <p class="hint">${qMode==="grade"?"Cada coluna é um dia: compromissos, tarefas e blocos de estudo no horário. Tracejado = sugestão de horário. Toque num bloco para abrir o dia.":"Todas as tarefas e blocos de estudo da semana. Arraste os cartões entre as colunas ou use os botões."}</p></section>`;
+    <p class="hint">${qMode==="grade"?"Cada coluna é um dia: compromissos, tarefas e blocos de estudo no horário. Tracejado = sugestão de horário. Arraste um bloco para mudar o horário ou o dia (no celular, segure antes de arrastar). Toque para abrir o dia.":"Todas as tarefas e blocos de estudo da semana. Arraste os cartões entre as colunas ou use os botões."}</p></section>`;
   return bar+(qMode==="grade"?agGradeHTML(w):agKanHTML(w));
 }
 function agKanHTML(w){
@@ -2135,6 +2215,7 @@ function agAct(el){
 }
 (function(){
   const root=$("ag");
+  gradeDrag(root);
   root.addEventListener("click",e=>{ const el=e.target.closest("[data-act]"); if(!el||el.tagName==="SELECT"||el.tagName==="INPUT") return; agAct(el); });
   root.addEventListener("change",e=>{ const el=e.target.closest("[data-act]"); if(el&&(el.tagName==="SELECT"||el.tagName==="INPUT")) agAct(el); });
   root.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.matches("[data-role=logv],[data-role=mlogv],#nt_t,#cap_t,[data-role=subv]")){ e.preventDefault(); (e.target.closest(".logg,.addt,.qcap,.subadd")?.querySelector("button[data-act]"))?.click(); } });
