@@ -512,12 +512,12 @@ body[data-g="home"] .controls{display:none}
         <button class="btn" type="submit" id="acctLogin">Entrar</button>
         <button class="btn line" type="button" id="acctSignup">Criar conta</button>
       </form>
-      <form class="acct-form acct-code" id="acctCodeForm" hidden autocomplete="one-time-code">
-        <span class="acct-pede">Receber o código por</span>
-        <button class="btn" type="button" id="acctViaZap">WhatsApp</button>
-        <button class="btn line" type="button" id="acctViaEmail">E-mail</button>
-        <input id="acctCode" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Código" aria-label="Código de confirmação">
+      <form class="acct-form acct-code" id="acctCodeForm" hidden autocomplete="off">
+        <input id="acctCode" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Código" aria-label="Código de confirmação" autocomplete="one-time-code">
         <button class="btn" type="submit" id="acctVerify">Confirmar</button>
+        <button class="btn line" type="button" id="acctViaEmail">Reenviar e-mail</button>
+        <button class="btn line" type="button" id="acctViaZap">Receber no WhatsApp</button>
+        <button class="btn line" type="button" id="acctVoltar">Voltar</button>
       </form>
       <p class="acct-msg" id="acctMsg" hidden></p>
     </div>
@@ -1259,6 +1259,8 @@ function openDay(w,d){
   openId=idOf(w,d); openD=d;
   draft=JSON.parse(JSON.stringify(days[openId]||{treino:{grupos:[],intensidade:"",min:60},cardio:[],extras:[],comidaTexto:"",comidas:[],dica:""}));
   draft.treino ||= {grupos:[],intensidade:"",min:60};
+  // Dias lançados pelo agente ou pelo chat podem vir sem alguma das listas.
+  draft.treino.grupos ||= []; draft.cardio ||= []; draft.extras ||= []; draft.comidas ||= [];
   $("pTitle").textContent=DAYS[d];
   $("pSub").textContent="Semana "+(w+1)+" · "+ddmm(dateOf(w,d))+(MENU[d].livre?" · dia livre":"");
   $("foodText").value=draft.comidaTexto||""; $("tipText").value=draft.dica||"";
@@ -1298,7 +1300,7 @@ function listRows(box,arr,ph,showSrc){
     const t=document.createElement("input"); t.value=it.desc||""; t.placeholder=ph; t.setAttribute("aria-label","Descrição"); t.oninput=()=>{it.desc=t.value;};
     const k=document.createElement("input"); k.type="number"; k.className="kc"; k.value=it.kcal??""; k.placeholder="kcal"; k.setAttribute("aria-label","kcal"); k.oninput=()=>{it.kcal=+k.value||0; live();};
     r.append(t,k,delBtn(()=>{arr.splice(i,1); drawEditor();}));
-    if (showSrc && (it.fonte||it.hora)){ const s=document.createElement("span"); s.className="src"; s.textContent=(it.hora?it.hora+" · ":"")+({base:"pela base",claude:"estimado pelo Claude",manual:"manual",menu:"do cardápio",chat:"pelo chat"}[it.fonte]||""); r.append(s); }
+    if (showSrc && (it.fonte||it.hora)){ const s=document.createElement("span"); s.className="src"; s.textContent=(it.hora?it.hora+" · ":"")+({base:"pela base",claude:"estimado pelo Claude",manual:"manual",menu:"do cardápio",chat:"pelo chat",agente:"pelo agente"}[it.fonte]||""); r.append(s); }
     box.append(r);
   });
 }
@@ -2320,45 +2322,80 @@ function acctUi(sb,session){
   const box=$("acct"); if(!box||!sb) return; box.hidden=false;
   const msg=t=>{ $("acctMsg").textContent=t; $("acctMsg").hidden=!t; };
   if(session){ $("acctOut").hidden=true; $("acctIn").hidden=false; $("acctWho").textContent=session.user.email||""; }
-  let emailPendente="", senhaPendente="";
+  let emailPendente="", senhaPendente="", esperaEmail=0, relogio=null;
   const fmtTel=t=>String(t||"").replace(/\D/g,"").replace(/^55(?=\d{10,11}$)/,"");
-  const pedirCodigo=(email,senha,texto)=>{ emailPendente=email; if(senha) senhaPendente=senha; $("acctCodeForm").hidden=false; $("acctCode").value=""; $("acctViaZap").hidden=!AGENTE_WHATSAPP; msg(texto); };
-  $("acctForm").onsubmit=async e=>{ e.preventDefault(); msg("Entrando…");
+  const rpc=(fn,args)=>sb.schema("meu_ritmo").rpc(fn,args);
+  const modoCadastro=on=>{ $("acctNome").hidden=!on; $("acctTel").hidden=!on; $("acctLogin").hidden=on; $("acctPass").autocomplete=on?"new-password":"current-password"; };
+  const botaoEmail=()=>{ const s=Math.ceil((esperaEmail-Date.now())/1000); const b=$("acctViaEmail"); b.disabled=s>0; b.textContent=s>0?`Reenviar e-mail (${s}s)`:"Reenviar e-mail"; if(s<=0&&relogio){ clearInterval(relogio); relogio=null; } };
+  const MOTIVO_EMAIL={limite:"Esse cadastro já pediu o código várias vezes. Espere uns minutos ou use o WhatsApp.",conta_nao_encontrada:"Não achei um cadastro esperando confirmação com esse e-mail.",nao_configurado:"O envio por e-mail está fora do ar. Use o WhatsApp."};
+  // Manda o código pelo agente (Brevo). O código nunca passa pelo site.
+  const mandarEmail=async ()=>{ if(!emailPendente) return false; msg("Enviando o código por e-mail…");
+    let j={};
+    try{ const r=await fetch(AGENTE_API+"/api/verificacao-email",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:emailPendente})}); j=await r.json().catch(()=>({})); }catch(e){ j={}; }
+    if(j.ok){ esperaEmail=Date.now()+60000; if(!relogio) relogio=setInterval(botaoEmail,1000); botaoEmail();
+      msg(`Enviamos um código de 6 dígitos para ${emailPendente}. Pode levar 1 minuto; olhe também o spam. Vale ${j.minutos||15} min.`); return true; }
+    msg(MOTIVO_EMAIL[j.motivo]||j.mensagem||"Não consegui mandar o e-mail agora. Tente de novo em instantes ou use o WhatsApp."); return false; };
+  const pedirCodigo=(email,senha,{zap=true,enviar=true}={})=>{ emailPendente=email; senhaPendente=senha||"";
+    $("acctForm").hidden=true; $("acctCodeForm").hidden=false; $("acctCode").value=""; $("acctViaZap").hidden=!(AGENTE_WHATSAPP&&zap); botaoEmail();
+    $("acctCode").focus(); if(enviar) return mandarEmail(); };
+  const voltar=()=>{ emailPendente=""; senhaPendente=""; $("acctCodeForm").hidden=true; $("acctForm").hidden=false; modoCadastro(false); msg(""); };
+  $("acctVoltar").onclick=voltar;
+  $("acctForm").onsubmit=async e=>{ e.preventDefault();
+    if(!$("acctNome").hidden){ $("acctSignup").click(); return; }
+    msg("Entrando…");
     const email=$("acctEmail").value.trim(), senha=$("acctPass").value;
     const {error}=await sb.auth.signInWithPassword({email,password:senha});
-    if(error){ if(/confirm/i.test(error.message)) pedirCodigo(email,senha,"Falta confirmar a conta. Escolha onde quer receber o código.");
-      else msg("Não consegui entrar: e-mail ou senha incorretos."); } };
-  $("acctSignup").onclick=async ()=>{ const email=$("acctEmail").value.trim(), password=$("acctPass").value, nome=$("acctNome").value.trim(), telefone=fmtTel($("acctTel").value);
-    if($("acctNome").hidden){ $("acctNome").hidden=false; $("acctTel").hidden=false; $("acctLogin").hidden=true; $("acctNome").focus(); msg("Preencha nome, WhatsApp com DDD, e-mail e uma senha (mínimo de 6 caracteres) e clique em Criar conta."); return; }
-    if(!nome||!email||password.length<6){ msg("Preencha nome, e-mail e uma senha com pelo menos 6 caracteres."); return; }
-    if(telefone&&!/^\d{10,11}$/.test(telefone)){ msg("WhatsApp inválido: use DDD + número, ex.: 81 99999-1234."); return; }
-    msg("Criando conta…");
-    const {data,error}=await sb.auth.signUp({email,password,options:{data:{nome,...(telefone?{telefone:"55"+telefone}:{})},emailRedirectTo:location.origin}});
-    if(error){ msg("Não consegui criar a conta: "+error.message); return; }
-    if(!data.session){ $("acctNome").hidden=true; $("acctTel").hidden=true; $("acctLogin").hidden=false; pedirCodigo(email,password,"Conta criada! Agora confirme: escolha onde quer receber o código de 6 dígitos."); } };
+    if(!error) return;
+    if(/confirm/i.test(error.message)){ await pedirCodigo(email,senha); return; }
+    msg(/invalid/i.test(error.message)?"Não consegui entrar: e-mail ou senha incorretos.":"Não consegui entrar agora. Confira a internet e tente de novo."); };
+  const MOTIVO_CONTA={email_invalido:"E-mail inválido.",senha_invalida:"A senha precisa ter de 6 a 72 caracteres.",nome_vazio:"Diga seu nome.",telefone_invalido:"WhatsApp inválido: use DDD + número, ex.: 81 99999-1234.",muitos_cadastros:"Muitos cadastros agora há pouco. Tente de novo em alguns minutos."};
+  $("acctSignup").onclick=async ()=>{
+    if($("acctNome").hidden){ modoCadastro(true); $("acctNome").focus(); msg("Preencha nome, e-mail e uma senha (mínimo de 6 caracteres). O WhatsApp é opcional. Depois clique em Criar conta."); return; }
+    const email=$("acctEmail").value.trim().toLowerCase(), password=$("acctPass").value, nome=$("acctNome").value.trim(), telefone=fmtTel($("acctTel").value);
+    if(!nome||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<6){ msg("Preencha nome, um e-mail válido e uma senha com pelo menos 6 caracteres."); return; }
+    if(telefone&&!/^\d{10,11}$/.test(telefone)){ msg(MOTIVO_CONTA.telefone_invalido); return; }
+    const btn=$("acctSignup"); btn.disabled=true; msg("Criando conta…");
+    try{
+      // A conta nasce por uma função nossa: não depende do e-mail do Supabase (limite de 2 por hora).
+      let {data,error}=await rpc("criar_conta",{p_email:email,p_senha:password,p_nome:nome,p_telefone:telefone});
+      if(error&&(error.code==="PGRST202"||error.code==="42883")){
+        // Banco ainda sem a função nova: cai no cadastro do próprio Supabase.
+        const r=await sb.auth.signUp({email,password,options:{data:{nome,...(telefone?{telefone:"55"+telefone}:{})},emailRedirectTo:location.origin}});
+        if(r.error){ msg(/rate limit/i.test(r.error.message)?"Muitos cadastros na última hora. Tente de novo mais tarde.":"Não consegui criar a conta: "+r.error.message); return; }
+        if(r.data?.session) return;
+        if(r.data?.user&&!r.data.user.identities?.length){ modoCadastro(false); msg("Esse e-mail já tem conta. Digite a senha e clique em Entrar."); return; }
+        data={ok:true,tem_telefone:!!telefone}; error=null;
+      }
+      if(error){ msg("Não consegui criar a conta agora. Confira a internet e tente de novo."); return; }
+      if(data?.motivo==="ja_existe"){ modoCadastro(false); msg("Esse e-mail já tem conta. Digite a senha e clique em Entrar."); return; }
+      if(!data?.ok){ msg(MOTIVO_CONTA[data?.motivo]||"Não consegui criar a conta. Tente de novo."); return; }
+      modoCadastro(false);
+      const foi=await pedirCodigo(email,password,{zap:!!data.tem_telefone});
+      if(!foi&&data.tem_telefone) msg("Conta criada! O e-mail não saiu agora: toque em Receber no WhatsApp ou em Reenviar e-mail.");
+    } finally { btn.disabled=false; } };
   $("acctViaZap").onclick=async ()=>{ if(!emailPendente) return;
     const jan=window.open("about:blank","_blank");
-    const {data,error}=await sb.schema("meu_ritmo").rpc("iniciar_verificacao",{p_email:emailPendente});
-    if(error||!data?.ok){ jan?.close(); msg(data?.motivo==="telefone_invalido"?"Essa conta não tem um WhatsApp válido. Use o e-mail.":"Não consegui gerar o código. Tente de novo."); return; }
+    const {data,error}=await rpc("iniciar_verificacao",{p_email:emailPendente});
+    if(error||!data?.ok){ jan?.close(); msg(data?.motivo==="telefone_invalido"?"Essa conta não tem um WhatsApp válido. Use o e-mail.":data?.motivo==="conta_nao_encontrada"?"Não achei um cadastro esperando confirmação com esse e-mail.":"Não consegui gerar o código. Tente de novo."); return; }
     const url=`https://wa.me/${AGENTE_WHATSAPP}?text=${encodeURIComponent("Quero meu código do Meu Ritmo")}`;
     if(jan) jan.location=url; else location.href=url;
     msg(`Abri o WhatsApp: envie a mensagem pronta pelo número que termina em ${data.final}. O código chega na resposta (vale ${data.minutos} min).`); };
-  $("acctViaEmail").onclick=async ()=>{ if(!emailPendente) return; msg("Enviando…");
-    try{ const r=await fetch(AGENTE_API+"/api/verificacao-email",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:emailPendente})});
-      const j=await r.json().catch(()=>({}));
-      msg(j.ok?`Código enviado para ${emailPendente}. Pode levar 1 minuto; veja o spam.`:(j.mensagem||"Não consegui mandar o e-mail. Tente o WhatsApp."));
-    }catch(e){ msg("Não consegui mandar o e-mail. Tente o WhatsApp."); } };
-  $("acctCodeForm").onsubmit=async e=>{ e.preventDefault();
+  $("acctViaEmail").onclick=()=>mandarEmail();
+  $("acctCode").oninput=()=>{ const v=$("acctCode").value.replace(/\D/g,"").slice(0,6); $("acctCode").value=v; if(v.length===6) $("acctCodeForm").requestSubmit(); };
+  let confirmando=false;
+  $("acctCodeForm").onsubmit=async e=>{ e.preventDefault(); if(confirmando) return;
     const token=$("acctCode").value.replace(/\D/g,""); if(token.length<6){ msg("O código tem 6 dígitos."); return; }
-    msg("Confirmando…");
-    const {data}=await sb.schema("meu_ritmo").rpc("confirmar_verificacao",{p_email:emailPendente,p_codigo:token});
-    if(!data?.ok&&["sem_codigo","codigo_errado"].includes(data?.motivo)){
-      // Também vale o código do e-mail automático do Supabase.
-      const v=await sb.auth.verifyOtp({email:emailPendente,token,type:"signup"}); if(!v.error){ msg("Conta confirmada! Entrando…"); return; } }
-    if(!data?.ok){ msg({expirado:"Código vencido. Peça outro.",bloqueado:"Muitas tentativas. Peça outro código.",codigo_errado:`Código errado. Restam ${data?.restam??0} tentativas.`}[data?.motivo]||"Não consegui confirmar. Peça outro código."); return; }
-    msg("Conta confirmada! Entrando…");
-    const {error}=senhaPendente?await sb.auth.signInWithPassword({email:emailPendente,password:senhaPendente}):{error:true};
-    if(error) msg("Conta confirmada. Agora é só entrar com seu e-mail e senha."); };
+    confirmando=true; msg("Confirmando…");
+    try{
+      const {data,error}=await rpc("confirmar_verificacao",{p_email:emailPendente,p_codigo:token});
+      if(error){ msg("Não consegui confirmar agora. Confira a internet e tente de novo."); return; }
+      if(!data?.ok&&data?.motivo!=="conta_nao_encontrada"){ $("acctCode").value="";
+        msg({expirado:"Código vencido. Peça outro.",bloqueado:"Muitas tentativas. Peça outro código.",sem_codigo:"Peça um código primeiro (e-mail ou WhatsApp).",codigo_errado:`Código errado. Restam ${data?.restam??0} tentativas.`}[data?.motivo]||"Não consegui confirmar. Peça outro código."); return; }
+      // ok, ou a conta já estava confirmada (ex.: confirmou em outra aba): é só entrar.
+      msg("Conta confirmada! Entrando…");
+      const r=senhaPendente?await sb.auth.signInWithPassword({email:emailPendente,password:senhaPendente}):{error:true};
+      if(r.error){ const em=emailPendente; voltar(); $("acctEmail").value=em; msg(data?.ok?"Conta confirmada. Agora é só entrar com seu e-mail e senha.":"Não consegui entrar: e-mail ou senha incorretos."); }
+    } finally { confirmando=false; } };
   $("acctLogout").onclick=async ()=>{ await sb.auth.signOut(); };
 }
 (async ()=>{
