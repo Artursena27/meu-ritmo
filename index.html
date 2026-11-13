@@ -400,6 +400,35 @@ body[data-g="home"] .controls{display:none}
 .sbi .ibtn{height:26px}
 .subadd{display:flex;gap:6px}
 .subadd input{flex:1;min-width:0;padding:6px 9px;font-size:13px}
+.qbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.grade{--pm:1.05px;display:grid;grid-template-columns:46px repeat(7,minmax(118px,1fr));border:1px solid var(--edge);border-radius:18px;background:var(--glass);overflow:auto;max-height:78vh;position:relative}
+.grade .gh{position:sticky;top:0;z-index:4;background:rgba(14,10,24,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--edge);padding:8px 6px;text-align:center;cursor:pointer;min-width:0}
+.grade .gh .wd{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.grade .gh .num{font-family:var(--display);font-size:20px;line-height:1.1}
+.grade .gh small{display:block;font-size:10.5px;color:var(--muted)}
+.grade .gh.today .num,.grade .gh.today .wd{color:var(--neon)}
+.grade .g0{position:sticky;left:0;top:0;z-index:5;background:rgba(14,10,24,.96);border-bottom:1px solid var(--edge)}
+.grade .gt{position:sticky;left:0;z-index:3;background:rgba(14,10,24,.92);border-right:1px solid var(--edge)}
+.grade .gt span{position:absolute;right:6px;transform:translateY(-50%);font-size:10.5px;color:var(--muted);font-family:var(--mono,monospace)}
+.grade .gc{position:relative;border-left:1px solid var(--edge);background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0 1px,transparent 1px calc(var(--pm)*60));background-position:0 var(--off,0)}
+.grade .gc.today{background-color:rgba(180,77,255,.06)}
+.gb{position:absolute;left:var(--l,2px);width:var(--w,calc(100% - 4px));top:calc(var(--a)*var(--pm));height:max(18px,calc(var(--len)*var(--pm) - 2px));border-radius:9px;padding:3px 6px;font-size:11px;line-height:1.25;overflow:hidden;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 26%,rgba(20,14,32,.92));border:1px solid color-mix(in srgb,var(--c) 70%,transparent);border-left:3px solid var(--c);color:var(--ink,#fff)}
+.gb b{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gb i{font-style:normal;color:var(--muted);font-size:10px}
+.gb.sug{border-style:dashed;background:color-mix(in srgb,var(--c) 12%,rgba(20,14,32,.85))}
+.gb.done{opacity:.45}.gb.done b{text-decoration:line-through}
+.gb.desl{background:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 4px,transparent 4px 8px);border:1px dashed var(--edge2);border-left-width:1px;color:var(--muted);padding:0 4px;font-size:9.5px;cursor:default}
+.gb:hover:not(.desl){z-index:2;outline:2px solid var(--c)}
+.gnow{position:absolute;left:0;right:0;top:calc(var(--a)*var(--pm));border-top:2px solid var(--bad,#ff4f6d);z-index:3;pointer-events:none}
+.gnow::before{content:"";position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--bad,#ff4f6d)}
+.gfoot{grid-column:1/-1;display:contents}
+.gs{border-left:1px solid var(--edge);border-top:1px solid var(--edge);padding:6px;display:flex;flex-direction:column;gap:4px;font-size:10.5px;min-width:0}
+.gs span{border-left:2px solid var(--c);padding-left:5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.glg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:11.5px;color:var(--muted)}
+.glg span{display:inline-flex;align-items:center;gap:5px}.glg i{width:12px;height:12px;border-radius:4px;background:var(--c);display:inline-block}
+.glg i.sugi{background:transparent;border:1.5px dashed var(--muted)}
+@media (max-width:620px){ .grade{--pm:.85px;grid-template-columns:38px repeat(7,minmax(96px,1fr))} .gb{font-size:10px;padding:2px 4px} }
 .kan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
 .kcol{background:var(--glass);border:1px solid var(--edge);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:160px}
 .kcol.dropok{border-color:var(--neon);background:rgba(180,77,255,.1)}
@@ -1796,7 +1825,47 @@ function kanMove(w,d,tid,to){
   else { t.feito=false; t.fazendo=false; }
   saveAg(agId(w,d));
 }
+let qMode=(()=>{ try{ return localStorage.getItem("ritmo-quadro")||"grade"; }catch(e){ return "grade"; } })();
+/* quadro semanal em grade: uma coluna por dia, atividades posicionadas pelo horário */
+function lanes(evs){
+  evs.sort((x,y)=>x.a-y.a||y.b-x.b); let grupo=[], fim=-1;
+  const fecha=()=>{ const ln=[]; grupo.forEach(e=>{ let i=ln.findIndex(v=>v<=e.a); if(i<0){ i=ln.length; ln.push(0); } ln[i]=e.b; e.lane=i; }); grupo.forEach(e=>e.nl=ln.length); grupo=[]; };
+  evs.forEach(e=>{ if(e.a>=fim&&grupo.length) fecha(); grupo.push(e); fim=Math.max(fim,e.b); }); if(grupo.length) fecha(); return evs;
+}
+function agGradeHTML(w){
+  const N=nowInfo(), s0=Math.floor(toMin(rotina.inicio)/60)*60, s1=Math.ceil(toMin(rotina.fim)/60)*60, H=s1-s0;
+  const cor=c=>(CATS[c]||CATS.pessoal)[1];
+  let head=`<div class="g0"></div>`, cols="", foot=`<div class="gs" style="border-left:0"></div>`;
+  for(let d=0;d<7;d++){
+    const isT=w===N.w&&d===N.d, past=w<N.w||(w===N.w&&d<N.d), {day}=plan(w,d,isT,N.nowM), dt=dateOf(w,d), evs=[];
+    fixosOf(day,d).filter(f=>f.ini&&f.fim).forEach(f=>{ const a=toMin(f.ini), b=toMin(f.fim), ok=!!day.presenca?.[f.id];
+      if(+f.dA) evs.push({a:a-f.dA,b:a,desl:1,n:"deslocamento"}); if(+f.dD) evs.push({a:b,b:b+(+f.dD),desl:1,n:"deslocamento"});
+      evs.push({a,b,n:f.titulo,c:cor(f.cat),sub:`${f.ini}–${f.fim}`,done:ok,fixo:1}); });
+    day.tarefas.filter(t=>!t.adiada&&t._at!=null&&!(past&&t._sug)).forEach(t=>{ const a=t._at, len=Math.max(15,t.feito?(t.dur||30):leftOf(t)||t.dur||30);
+      evs.push({a,b:a+len,n:taskTitle(t,day),c:cor(t.cat),sub:`${fromMin(a)} · ${durTxt(t.dur)}${t._sug?" · sugestão":""}`,done:t.feito,sug:t._sug,tid:t.id}); });
+    lanes(evs.filter(e=>!e.desl)); evs.filter(e=>e.desl).forEach(e=>{ e.lane=0; e.nl=1; });
+    const blocos=evs.map(e=>{ const a=Math.max(e.a,s0)-s0, len=Math.min(e.b,s1)-Math.max(e.a,s0); if(len<=0) return "";
+      const pos=`--a:${a};--len:${len};--l:calc(${e.lane}*100%/${e.nl} + 2px);--w:calc(100%/${e.nl} - 4px)`;
+      if(e.desl) return `<div class="gb desl" style="${pos}" aria-hidden="true"></div>`;
+      return `<div class="gb ${e.sug?"sug":""} ${e.done?"done":""}" style="--c:${e.c};${pos}" data-act="${e.tid?"kopen":"opendia"}" ${e.tid?`data-t="${e.tid}"`:""} title="${esc(e.n)} · ${esc(e.sub)}"><b>${e.done?"✓ ":""}${esc(e.n)}</b>${len>=35?`<i>${esc(e.sub)}</i>`:""}</div>`; }).join("");
+    const agoraL=isT&&N.nowM>=s0&&N.nowM<=s1?`<div class="gnow" style="--a:${N.nowM-s0}"></div>`:"";
+    head+=`<div class="gh ${isT?"today":""}" data-wd="${w},${d}" data-act="opendia" title="Abrir o dia"><div class="wd">${DAYS[d].slice(0,3)}</div><div class="num">${dt.getDate()}</div>${isT?"<small>hoje</small>":""}</div>`;
+    cols+=`<div class="gc ${isT?"today":""}" data-wd="${w},${d}" style="height:calc(${H}*var(--pm))">${blocos}${agoraL}</div>`;
+    const sem=day.tarefas.filter(t=>!t.adiada&&!t.feito&&(t._at==null||(past&&t._sug)));
+    foot+=`<div class="gs" data-wd="${w},${d}">${sem.length&&past?`<b style="color:var(--bad,#ff4f6d);font-size:10px">Ficou por fazer</b>`:""}${sem.length?sem.map(t=>`<span style="--c:${cor(t.cat)}" title="${esc(taskTitle(t,day))}">${esc(taskTitle(t,day))} · ${durTxt(leftOf(t))}</span>`).join(""):""}</div>`;
+  }
+  let gut=`<div class="gt" style="height:calc(${H}*var(--pm))">`;
+  for(let m=s0+60;m<s1;m+=60) gut+=`<span style="top:calc(${m-s0}*var(--pm))">${fromMin(m)}</span>`;
+  gut+=`</div>`;
+  const leg=Object.entries(CATS).filter(([k])=>k!=="estudo"||true).map(([k,[l,c]])=>`<span><i style="--c:${c}"></i>${l}</span>`).join("")+`<span><i class="sugi"></i>Sugestão de horário</span>`;
+  return `<div class="grade">${head}${gut}${cols}${foot}</div><div class="glg" style="margin-top:8px">${leg}</div>`;
+}
 function agBoardHTML(w){
+  const bar=`<section class="panelc"><div class="qbar"><h3 style="margin:0">${ICON("check")}Quadro da semana ${w+1}</h3><div class="pillbar sm" role="group" aria-label="Formato do quadro"><button data-act="qmode" data-v="grade" aria-pressed="${qMode==="grade"}">Grade por horário</button><button data-act="qmode" data-v="status" aria-pressed="${qMode!=="grade"}">A fazer · Feito</button></div></div>
+    <p class="hint">${qMode==="grade"?"Cada coluna é um dia: compromissos, tarefas e blocos de estudo no horário. Tracejado = sugestão de horário. Toque num bloco para abrir o dia.":"Todas as tarefas e blocos de estudo da semana. Arraste os cartões entre as colunas ou use os botões."}</p></section>`;
+  return bar+(qMode==="grade"?agGradeHTML(w):agKanHTML(w));
+}
+function agKanHTML(w){
   const N=nowInfo(), cols={todo:[],doing:[],done:[]};
   for(let d=0;d<7;d++){ const day=getDay(w,d); day.tarefas.filter(t=>!t.adiada).forEach(t=>cols[kanStatus(t)].push({t,d,day})); }
   const ord=(a,b)=>a.d-b.d||PRIO[b.t.prio||"media"][1]-PRIO[a.t.prio||"media"][1];
@@ -1808,8 +1877,7 @@ function agBoardHTML(w){
       <div class="ka">${k!=="todo"?`<button class="ibtn ghost" data-act="kmove" data-v="${k==="done"?"doing":"todo"}" aria-label="Voltar uma coluna">${ICON("left")}</button>`:""}<button class="ibtn ghost" data-act="kopen">Abrir o dia</button>${k!=="done"?`<button class="ibtn" data-act="kmove" data-v="${k==="todo"?"doing":"done"}">${k==="todo"?"Começar":"Concluir"}</button>`:""}</div>
     </div>`; };
   const col=(k,titulo,vazio)=>`<section class="kcol" data-kcol="${k}"><h3>${titulo}<small>${cols[k].length}</small></h3>${cols[k].sort(ord).map(x=>card(x,k)).join("")||`<p class="hint">${vazio}</p>`}</section>`;
-  return `<section class="panelc"><h3>${ICON("check")}Quadro da semana ${w+1}</h3><p class="hint">Todas as tarefas e blocos de estudo da semana. Arraste os cartões entre as colunas ou use os botões.</p></section>
-  <div class="kan">${col("todo","A fazer","Nada pendente nesta semana.")}${col("doing","Fazendo","Traga para cá o que você começou.")}${col("done","Feito","O que você concluir aparece aqui.")}</div>`;
+  return `<div class="kan">${col("todo","A fazer","Nada pendente nesta semana.")}${col("doing","Fazendo","Traga para cá o que você começou.")}${col("done","Feito","O que você concluir aparece aqui.")}</div>`;
 }
 
 /* hábitos da semana, calculados do que já está registrado na Rotina e no Corpo */
@@ -1969,6 +2037,7 @@ function agWeekHTML(w){
 function renderAg(){
   const N=nowInfo(); if(!agSel) agSel={w:N.w,d:N.d};
   $("ag").innerHTML=view==="agenda"?agWeekHTML(week):view==="quadro"?agBoardHTML(week):agDayHTML(agSel.w,agSel.d,N);
+  const gHoje=$("ag").querySelector(".grade .gh.today"); if(gHoje){ const g=gHoje.closest(".grade"); if(g.scrollWidth>g.clientWidth) g.scrollLeft=Math.max(0,gHoje.offsetLeft-50); }
   tickTimers();
   if(agFlash){ const el=$("ag").querySelector(`.colr [data-t="${agFlash}"]`)||$("ag").querySelector(`[data-t="${agFlash}"]`); if(el){ el.classList.add("flash"); el.scrollIntoView({block:"center",behavior:"smooth"}); el.querySelector("[data-act=timer]")?.focus(); } agFlash=null; }
 }
@@ -2009,6 +2078,7 @@ function agAct(el){
     case "subtog": case "subdel": { const t=T(), sid=el.closest("[data-s]")?.dataset.s; if(!t||!t.subs) return; if(a==="subdel") t.subs=t.subs.filter(x=>x.id!==sid); else { const x=t.subs.find(y=>y.id===sid); if(x) x.ok=!x.ok; } break; }
     case "kmove": kanMove(w,d,tid,el.dataset.v); save=false; break;
     case "kopen": agSel={w,d}; view="hoje"; agFlash=tid; render(); return;
+    case "qmode": qMode=el.dataset.v==="status"?"status":"grade"; try{ localStorage.setItem("ritmo-quadro",qMode); }catch(e){} renderAg(); return;
     case "foco": case "focok": { const day=D(), i=+el.dataset.v; if(!Array.isArray(day.foco)) day.foco=[]; for(let k=0;k<3;k++) day.foco[k]=day.foco[k]||{txt:"",ok:false};
       if(a==="foco"){ day.foco[i].txt=el.value.trim(); if(!day.foco[i].txt) day.foco[i].ok=false; } else { if(!day.foco[i].txt) return; day.foco[i].ok=!day.foco[i].ok; } break; }
     case "noop": return;
