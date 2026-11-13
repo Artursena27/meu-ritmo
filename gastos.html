@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Gastos com IA · Meu Ritmo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Painel do dono: resumo no topo, um gráfico de barras por período, depois quem gastou e com qual modelo. */
+:root{
+  --bg0:#05040a; --bg1:#0e0820; --bg2:#26093f;
+  --glass:rgba(255,255,255,.045); --glass2:rgba(255,255,255,.08); --edge:rgba(190,120,255,.18); --edge2:rgba(190,120,255,.38);
+  --ink:#f4effe; --muted:#a99cc4; --dim:#6f6590; --neon:#b44dff; --neon2:#7b2ff7;
+  --ok:#3ee8a5; --warn:#ffc547; --bad:#ff5c86;
+  --display:"Outfit",system-ui,sans-serif; --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg0)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(165deg,var(--bg0) 0%,var(--bg1) 55%,var(--bg2) 100%)}
+body{margin:0;background:var(--bg0);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.45;min-height:100vh}
+.wrap{max-width:1040px;margin:0 auto;padding-block:22px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:16px;font-weight:700}
+a{color:var(--ink)}
+.mono,td.n,th.n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between}
+.top p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:flex;background:var(--glass);border:1px solid var(--edge);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;color:var(--muted);font:600 13px var(--body);padding:6px 13px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff}
+select,input{background:var(--glass);border:1px solid var(--edge);color:var(--ink);border-radius:10px;padding:7px 9px;font:500 13px var(--body);min-width:0}
+input.num{width:74px;font-family:var(--mono);text-align:right}
+:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--glass);border:1px solid var(--edge);border-radius:16px;padding:13px 14px;min-width:0}
+.kpi.main{border-color:var(--edge2);background:linear-gradient(135deg,rgba(180,77,255,.18),rgba(255,255,255,.03))}
+.kpi .l{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.card{background:var(--glass);border:1px solid var(--edge);border-radius:18px;padding:16px;min-width:0}
+.card>.hd{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hint{color:var(--muted);font-size:12.5px;margin:0}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:500 11px var(--mono)}
+.chart .grid{stroke:var(--edge);stroke-width:1}
+.chart .bar{fill:url(#g);cursor:pointer}
+.chart .bar.vazio{fill:var(--glass2)}
+.chart .bar:hover,.chart .bar.sel{fill:#e9c9ff}
+.det{min-height:20px;margin:8px 0 0;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:6px 8px;border-bottom:1px solid var(--edge);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid rgba(190,120,255,.09);vertical-align:middle}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.part{display:inline-block;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--neon),var(--neon2));vertical-align:middle;margin-right:6px;min-width:2px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid var(--edge);color:var(--muted);margin-left:6px}
+.pill.demo{border-color:var(--warn);color:var(--warn)}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.vazio-box{text-align:center;padding:26px 14px;color:var(--muted)}
+.vazio-box b{display:block;color:var(--ink);font-family:var(--display);font-size:17px;margin-bottom:4px}
+.btn{border:1px solid var(--edge2);background:var(--glass2);color:var(--ink);border-radius:10px;padding:8px 13px;font:600 13px var(--body);cursor:pointer}
+td:first-child{overflow-wrap:anywhere}
+@media (max-width:760px){ .opt{display:none} td .pill{display:none} .card{padding:14px 12px} td,th{padding-left:5px;padding-right:5px} input.num{width:58px} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .duo{grid-template-columns:minmax(0,1fr)} h1{font-size:22px} .kpi .v{font-size:22px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Gastos com IA <span class="pill demo" id="demoTag" hidden>dados de exemplo</span></h1>
+      <p id="sub">Quanto o agente do WhatsApp gastou de Gemini, por dia, semana e mês.</p>
+    </div>
+    <div class="ctl">
+      <label class="hint" for="pessoa">Pessoa</label>
+      <select id="pessoa"><option value="*">Todas</option></select>
+      <div class="seg" role="group" aria-label="Moeda">
+        <button type="button" data-moeda="USD" aria-pressed="true">US$</button>
+        <button type="button" data-moeda="BRL" aria-pressed="false">R$</button>
+      </div>
+      <label class="hint" for="cambio" id="cambioL" hidden>US$ 1 = R$</label>
+      <input class="num" id="cambio" inputmode="decimal" value="5.50" hidden aria-label="Cotação do dólar em reais">
+    </div>
+  </header>
+
+  <section class="card" id="aviso" hidden><div class="vazio-box"><b id="avisoT"></b><span id="avisoP"></span><div style="margin-top:12px" id="avisoB"></div></div></section>
+
+  <section class="kpis" id="kpis" hidden>
+    <div class="kpi main"><div class="l">Hoje</div><div class="v" id="kHoje">–</div><div class="s" id="kHojeS"></div></div>
+    <div class="kpi"><div class="l">Últimos 7 dias</div><div class="v" id="k7">–</div><div class="s" id="k7S"></div></div>
+    <div class="kpi"><div class="l">Este mês</div><div class="v" id="kMes">–</div><div class="s" id="kMesS"></div></div>
+    <div class="kpi"><div class="l">Projeção do mês</div><div class="v" id="kProj">–</div><div class="s" id="kProjS"></div></div>
+  </section>
+
+  <section class="card" id="grafico" hidden>
+    <div class="hd">
+      <h2 id="gTitulo">Gasto por dia</h2>
+      <div class="seg" role="group" aria-label="Período">
+        <button type="button" data-per="dia" aria-pressed="true">Diário</button>
+        <button type="button" data-per="semana" aria-pressed="false">Semanal</button>
+        <button type="button" data-per="mes" aria-pressed="false">Mensal</button>
+      </div>
+    </div>
+    <svg class="chart" id="svg" viewBox="0 0 960 300" role="img" aria-label="Gráfico de barras do gasto por período"></svg>
+    <p class="det" id="det">Passe o mouse ou toque numa barra para ver o detalhe.</p>
+  </section>
+
+  <div class="duo" id="tabelas" hidden>
+    <section class="card">
+      <div class="hd"><h2>Por pessoa</h2><span class="hint" id="pPer">últimos 30 dias</span></div>
+      <div class="scroll"><table><thead><tr><th>Quem</th><th class="n">Respostas</th><th class="n opt">Tokens</th><th class="n">Custo</th></tr></thead><tbody id="tPessoas"></tbody></table></div>
+    </section>
+    <section class="card">
+      <div class="hd"><h2>Por modelo</h2><span class="hint">preço por 1 milhão de tokens, em US$</span></div>
+      <div class="scroll"><table><thead><tr><th>Modelo</th><th class="n">Entrada</th><th class="n">Saída</th><th class="n opt">Tokens</th><th class="n">Custo</th></tr></thead><tbody id="tModelos"></tbody></table></div>
+      <p class="hint" style="margin-top:10px">O custo é estimado: tokens registrados × o preço desta tabela. Ajuste os preços se o Google mudar a tabela; no plano grátis do Gemini a cobrança real é zero. Transcrição e imagem usam o valor gravado pelo agente.</p>
+    </section>
+  </div>
+  <p class="hint" id="rodape" hidden></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL="https://agdyspfoupflwdesemdl.supabase.co", SB_KEY="sb_publishable_BiPX3KYCfAGIgLmHmfaI0w_J0XhyyAD";
+const $=id=>document.getElementById(id);
+const guarda={ ler(k,p){ try{ const v=localStorage.getItem("gastos:"+k); return v==null?p:JSON.parse(v); }catch(e){ return p; } }, por(k,v){ try{ localStorage.setItem("gastos:"+k,JSON.stringify(v)); }catch(e){} } };
+
+/* Preço por 1 milhão de tokens [entrada, saída], em dólar. Vale o prefixo mais longo; dá para editar na tabela. */
+const PRECOS_PADRAO={"gemini-3-pro":[2,12],"gemini-3-flash":[0.5,3],"gemini-2.5-pro":[1.25,10],"gemini-2.5-flash-lite":[0.10,0.40],"gemini-2.5-flash":[0.30,2.50],"gemini-2.0-flash-lite":[0.075,0.30],"gemini-2.0-flash":[0.10,0.40]};
+let precosMeus=guarda.ler("precos",{}), moeda=guarda.ler("moeda","USD"), cambio=+guarda.ler("cambio",5.5)||5.5, per=guarda.ler("per","dia"), pessoa="*";
+let linhas=[], hoje="", meta={}, demo=false;
+
+const precoDe=m=>{ const nome=String(m||"").replace(/^models\//,""); if(precosMeus[nome]) return precosMeus[nome];
+  const k=Object.keys(PRECOS_PADRAO).filter(k=>nome.startsWith(k)).sort((a,b)=>b.length-a.length)[0]; return k?PRECOS_PADRAO[k]:null; };
+const custo=l=>{ if(l.tipo!=="chat") return +l.custo_usd||0; const p=precoDe(l.modelo); return p?(l.entrada*p[0]+l.saida*p[1])/1e6:(+l.custo_usd||0); };
+const fmt=usd=>{ const v=moeda==="BRL"?usd*cambio:usd, s=moeda==="BRL"?"R$ ":"US$ ";
+  return s+v.toLocaleString("pt-BR",{minimumFractionDigits:v>0&&v<1?4:2,maximumFractionDigits:v>0&&v<1?4:2}); };
+const num=n=>Math.round(n).toLocaleString("pt-BR");
+const tk=n=>n>=1e6?(n/1e6).toLocaleString("pt-BR",{maximumFractionDigits:2})+" mi":n>=1e3?(n/1e3).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mil":num(n);
+const dt=s=>new Date(s+"T12:00:00");
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const mais=(s,n)=>{ const d=dt(s); d.setDate(d.getDate()+n); return iso(d); };
+const segunda=s=>{ const d=dt(s); d.setDate(d.getDate()-((d.getDay()+6)%7)); return iso(d); };
+const ddmm=s=>s.slice(8,10)+"/"+s.slice(5,7);
+const MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const quem=l=>l.numero==null?"Você":(l.nome||"+"+l.numero);
+const doFiltro=()=>linhas.filter(l=>pessoa==="*"||String(l.numero)===pessoa);
+const soma=(ls)=>ls.reduce((a,l)=>{ a.c+=custo(l); a.r+=l.tipo==="chat"?l.chamadas:0; a.t+=(+l.entrada||0)+(+l.saida||0); return a; },{c:0,r:0,t:0});
+
+function baldes(){
+  const ls=doFiltro(), out=[];
+  if(per==="dia"){ for(let i=29;i>=0;i--){ const d=mais(hoje,-i); out.push({chave:d,rot:ddmm(d),nome:dt(d).toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"}),ls:ls.filter(l=>l.dia===d)}); } }
+  else if(per==="semana"){ const s0=segunda(hoje); for(let i=11;i>=0;i--){ const a=mais(s0,-7*i), b=mais(a,6); out.push({chave:a,rot:ddmm(a),nome:"semana de "+ddmm(a)+" a "+ddmm(b),ls:ls.filter(l=>l.dia>=a&&l.dia<=b)}); } }
+  else { const d=dt(hoje); for(let i=11;i>=0;i--){ const m=new Date(d.getFullYear(),d.getMonth()-i,1), k=iso(m).slice(0,7); out.push({chave:k,rot:MESES[m.getMonth()]+"/"+String(m.getFullYear()).slice(2),nome:m.toLocaleDateString("pt-BR",{month:"long",year:"numeric"}),ls:ls.filter(l=>l.dia.slice(0,7)===k)}); } }
+  return out.map(b=>({...b,...soma(b.ls)}));
+}
+
+function grafico(){
+  const svg=$("svg"), W=Math.max(300,Math.round(svg.getBoundingClientRect().width)||960), H=W<560?230:300, ml=W<560?48:64,mr=8,mt=16,mb=30, bs=baldes(), w=W-ml-mr, h=H-mt-mb;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const max=Math.max(...bs.map(b=>b.c),0), teto=max>0?max*1.12:1;
+  const mag=Math.pow(10,Math.floor(Math.log10(teto/4))), passo=[1,2,2.5,5,10].map(x=>x*mag).find(x=>teto/x<=5)||mag*10;
+  const y=v=>mt+h-(v/teto)*h, passoX=w/bs.length, lb=Math.min(passoX*0.68,46);
+  let s=`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c77dff"/><stop offset="1" stop-color="#7b2ff7"/></linearGradient></defs>`;
+  for(let v=0;v<=teto+1e-12;v+=passo){ s+=`<line class="grid" x1="${ml}" x2="${W-mr}" y1="${y(v)}" y2="${y(v)}"/><text x="${ml-8}" y="${y(v)+3.5}" text-anchor="end">${max>0?fmt(v).replace(/^(US\$|R\$) /,""):""}</text>`; }
+  const cada=Math.ceil(bs.length/(W<560?5:10));
+  bs.forEach((b,i)=>{ const x=ml+i*passoX+(passoX-lb)/2, alt=b.c>0?Math.max((b.c/teto)*h,2):2;
+    s+=`<rect class="bar${b.c>0?"":" vazio"}" data-i="${i}" x="${x}" y="${mt+h-alt}" width="${lb}" height="${alt}" rx="${Math.min(4,lb/2)}" tabindex="0"><title>${b.nome}: ${fmt(b.c)}</title></rect>`;
+    if((bs.length-1-i)%cada===0) s+=i===bs.length-1?`<text x="${W-mr}" y="${H-10}" text-anchor="end">${b.rot}</text>`:`<text x="${x+lb/2}" y="${H-10}" text-anchor="middle">${b.rot}</text>`; });
+  s+=`<text x="${ml-8}" y="${mt-3}" text-anchor="end">${moeda==="BRL"?"R$":"US$"}</text>`;
+  svg.innerHTML=s;
+  const mostra=i=>{ const b=bs[i]; svg.querySelectorAll(".bar").forEach(r=>r.classList.toggle("sel",+r.dataset.i===i));
+    $("det").innerHTML=`<b>${b.nome}</b>: <b>${fmt(b.c)}</b> · ${num(b.r)} resposta${b.r===1?"":"s"} · ${tk(b.t)} tokens`; };
+  svg.querySelectorAll(".bar").forEach(r=>{ const i=+r.dataset.i; r.onmouseenter=r.onfocus=r.onclick=()=>mostra(i); });
+  $("gTitulo").textContent={dia:"Gasto por dia (30 dias)",semana:"Gasto por semana (12 semanas)",mes:"Gasto por mês (12 meses)"}[per];
+  mostra(bs.length-1);
+}
+
+function resumo(){
+  const ls=doFiltro(), k=(f)=>soma(ls.filter(f));
+  const h=k(l=>l.dia===hoje), s7=k(l=>l.dia>mais(hoje,-7)), mes=k(l=>l.dia.slice(0,7)===hoje.slice(0,7));
+  const dia=+hoje.slice(8,10), noMes=new Date(+hoje.slice(0,4),+hoje.slice(5,7),0).getDate();
+  $("kHoje").textContent=fmt(h.c); $("kHojeS").textContent=`${num(h.r)} respostas · ${tk(h.t)} tokens`;
+  $("k7").textContent=fmt(s7.c); $("k7S").textContent=`média de ${fmt(s7.c/7)} por dia`;
+  $("kMes").textContent=fmt(mes.c); $("kMesS").textContent=`${num(mes.r)} respostas até o dia ${dia}`;
+  $("kProj").textContent=fmt(mes.c/dia*noMes); $("kProjS").textContent=`se o ritmo do mês continuar (${noMes} dias)`;
+}
+
+function tabelas(){
+  const desde=mais(hoje,-29), ls=linhas.filter(l=>l.dia>=desde);
+  const porQuem=new Map(); ls.forEach(l=>{ const k=String(l.numero); if(!porQuem.has(k)) porQuem.set(k,{nome:quem(l),numero:l.numero,ls:[]}); porQuem.get(k).ls.push(l); });
+  const ps=[...porQuem.values()].map(p=>({...p,...soma(p.ls)})).sort((a,b)=>b.c-a.c), total=ps.reduce((a,p)=>a+p.c,0)||1;
+  const tb=$("tPessoas"); tb.innerHTML="";
+  ps.forEach(p=>{ const tr=tb.insertRow(); const c0=tr.insertCell(); c0.textContent=p.nome; if(p.numero!=null&&p.nome!=="+"+p.numero){ const sm=document.createElement("span"); sm.className="pill mono"; sm.textContent="final "+String(p.numero).slice(-4); c0.append(sm); }
+    [num(p.r),tk(p.t)].forEach((v,i)=>{ const c=tr.insertCell(); c.className=i?"n opt":"n"; c.textContent=v; });
+    const c=tr.insertCell(); c.className="n"; const bar=document.createElement("span"); bar.className="part"; bar.style.width=Math.round(p.c/total*48)+"px"; c.append(bar,fmt(p.c)); });
+  if(!ps.length){ const c=tb.insertRow().insertCell(); c.colSpan=4; c.className="hint"; c.textContent="Ninguém usou nos últimos 30 dias."; }
+
+  const porMod=new Map(); doFiltro().filter(l=>l.dia>=desde).forEach(l=>{ const k=l.tipo==="chat"?l.modelo:l.modelo+" ("+({transcricao:"transcrição",imagem:"imagem"}[l.tipo]||l.tipo)+")"; if(!porMod.has(k)) porMod.set(k,{nome:k,modelo:l.modelo,tipo:l.tipo,ls:[]}); porMod.get(k).ls.push(l); });
+  const tm=$("tModelos"); tm.innerHTML="";
+  [...porMod.values()].map(m=>({...m,...soma(m.ls)})).sort((a,b)=>b.c-a.c).forEach(m=>{ const tr=tm.insertRow(); tr.insertCell().textContent=m.nome;
+    const p=precoDe(m.modelo);
+    [0,1].forEach(i=>{ const c=tr.insertCell(); c.className="n"; if(m.tipo!=="chat"){ c.textContent="–"; return; }
+      const inp=document.createElement("input"); inp.className="num"; inp.inputMode="decimal"; inp.value=p?String(p[i]).replace(".",","):""; inp.placeholder="?"; inp.id="pr_"+i+"_"+m.modelo.replace(/\W/g,"_"); inp.setAttribute("aria-label",(i?"Preço de saída":"Preço de entrada")+" de "+m.modelo);
+      inp.onchange=()=>{ const v=parseFloat(inp.value.replace(",",".")); const at=(precoDe(m.modelo)||[0,0]).slice(); at[i]=isFinite(v)&&v>=0?v:0; precosMeus[m.modelo]=at; guarda.por("precos",precosMeus); desenhar(); };
+      c.append(inp); });
+    [tk(m.t),fmt(m.c)].forEach((v,i)=>{ const c=tr.insertCell(); c.className=i?"n":"n opt"; c.textContent=v; });
+    if(m.tipo==="chat"&&!p){ const av=document.createElement("span"); av.className="pill"; av.style.color="var(--warn)"; av.textContent="sem preço"; tr.cells[0].append(av); } });
+  if(!porMod.size){ const c=tm.insertRow().insertCell(); c.colSpan=5; c.className="hint"; c.textContent="Sem uso nos últimos 30 dias."; }
+}
+
+function desenhar(){
+  document.querySelectorAll("[data-moeda]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.moeda===moeda));
+  document.querySelectorAll("[data-per]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.per===per));
+  $("cambio").hidden=$("cambioL").hidden=moeda!=="BRL";
+  resumo(); grafico(); tabelas();
+}
+
+function mostrar(dados,ehDemo){
+  linhas=dados.linhas||[]; hoje=dados.hoje; meta=dados; demo=!!ehDemo;
+  $("demoTag").hidden=!demo;
+  const sel=$("pessoa"); sel.length=1; const vistos=new Map(); linhas.forEach(l=>vistos.set(String(l.numero),quem(l)));
+  [...vistos].forEach(([k,n])=>sel.add(new Option(n,k))); pessoa="*";
+  const tem=linhas.length>0;
+  ["kpis","grafico","tabelas","rodape"].forEach(id=>$(id).hidden=!tem);
+  $("aviso").hidden=tem;
+  if(!tem){ $("avisoT").textContent="Ainda não há uso registrado";
+    $("avisoP").textContent="O agente começou a registrar cada chamada de IA em 12/11/2026. Assim que alguém conversar com ele pelo WhatsApp, o gasto aparece aqui: hoje, por semana e por mês, por pessoa e por modelo.";
+    const b=document.createElement("button"); b.className="btn"; b.textContent="Ver como fica, com dados de exemplo"; b.onclick=()=>mostrar(exemplo(hoje),true); $("avisoB").replaceChildren(b); return; }
+  $("rodape").textContent=demo?"Estes números são inventados, só para mostrar o painel. Recarregue a página para ver os dados reais.":`${meta.pessoas||0} pessoa(s) além de você já falaram com o agente${meta.bloqueadas?`, ${meta.bloqueadas} bloqueada(s)`:""}. Dias no fuso de Brasília. Atualizado ao abrir a página.`;
+  desenhar();
+}
+
+/* Dados inventados e fixos (mesma semente), só para a prévia. */
+function exemplo(h){ let s=7; const rnd=()=>(s=(s*16807)%2147483647)/2147483647; const ls=[];
+  const gente=[[null,null,1],["5581911112222","Lívia",.55],["5581933334444","Pedro",.25]];
+  for(let i=75;i>=0;i--){ const dia=mais(h,-i); gente.forEach(([numero,nome,peso],gi)=>{ if(gi&&i>40) return; if(rnd()<.18) return;
+      const ch=Math.max(1,Math.round((4+rnd()*22)*peso)); ls.push({dia,numero,nome,modelo:"gemini-2.5-flash",tipo:"chat",chamadas:ch,entrada:Math.round(ch*(2600+rnd()*1800)),saida:Math.round(ch*(160+rnd()*240)),segundos:0,custo_usd:0}); }); }
+  return {linhas:ls,hoje:h,pessoas:2,bloqueadas:0}; }
+
+document.querySelectorAll("[data-moeda]").forEach(b=>b.onclick=()=>{ moeda=b.dataset.moeda; guarda.por("moeda",moeda); desenhar(); });
+document.querySelectorAll("[data-per]").forEach(b=>b.onclick=()=>{ per=b.dataset.per; guarda.por("per",per); desenhar(); });
+$("cambio").value=String(cambio).replace(".",","); $("cambio").onchange=()=>{ const v=parseFloat($("cambio").value.replace(",",".")); if(v>0){ cambio=v; guarda.por("cambio",v); desenhar(); } };
+$("pessoa").onchange=()=>{ pessoa=$("pessoa").value; desenhar(); };
+let tRes=0; addEventListener("resize",()=>{ clearTimeout(tRes); tRes=setTimeout(()=>{ if(!$("grafico").hidden) grafico(); },150); });
+
+function aviso(t,p,link){ ["kpis","grafico","tabelas","rodape"].forEach(id=>$(id).hidden=true); $("aviso").hidden=false; $("avisoT").textContent=t; $("avisoP").textContent=p;
+  if(link){ const a=document.createElement("a"); a.className="btn"; a.href="/"; a.textContent="Ir para o Meu Ritmo e entrar"; a.style.textDecoration="none"; a.style.display="inline-block"; $("avisoB").replaceChildren(a); } else $("avisoB").replaceChildren(); }
+
+(async ()=>{
+  const hojeLocal=iso(new Date());
+  if(location.hash==="#exemplo"){ mostrar(exemplo(hojeLocal),true); return; }
+  let sb=null, session=null;
+  try{ sb=window.supabase.createClient(SB_URL,SB_KEY); session=(await sb.auth.getSession()).data.session; }catch(e){}
+  if(!session){ aviso("Entre com a sua conta","Este painel é só do dono do agente. Entre no Meu Ritmo com a sua conta e volte para esta página.",true); return; }
+  const {data,error}=await sb.schema("meu_ritmo").rpc("gastos_ia",{p_dias:400});
+  if(error){ aviso("Não consegui carregar os gastos","Confira a internet e recarregue a página. ("+(error.message||"erro")+")"); return; }
+  if(!data?.ok){ aviso("Este painel é só do dono","A conta que está logada não é a do dono do agente."); return; }
+  mostrar(data,false);
+})();
+</script>
+</body>
+</html>
