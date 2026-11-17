@@ -2878,7 +2878,7 @@ async function ativarPush(){
     pushDoc={inscricoes:[...(pushDoc.inscricoes||[]).filter(s=>s.endpoint!==j.endpoint),{...j,aparelho:navigator.userAgent.slice(0,120),criado:new Date().toISOString()}].slice(-8)};
     await db.doc("tracker/push").set(pushDoc);
     if(!cfgAv().push){ avisosCfg={...cfgAv(),push:true}; await db.doc("tracker/avisos_config").set(avisosCfg); }
-    reg.showNotification("Meu Ritmo",{body:"Pronto! Os avisos vão chegar aqui também. 💪",icon:"/icons/icon-192.png",tag:"ativado"});
+    reg.showNotification("Meu Ritmo",{body:"Pronto! Os avisos vão chegar aqui também. 💪",icon:"/icons/icon-192.png",tag:"ativado",silent:false,vibrate:[200,100,200]});
   }catch(e){ pushMsg="Não consegui ativar agora. Tente de novo em instantes."; }
   renderAvisos();
 }
@@ -2907,7 +2907,7 @@ document.addEventListener("click",e=>{
   else if(t.matches("[data-avresp]")){ const id=t.closest("[data-avid]").dataset.avid; marcarLidos([id]); chatAbrir(); }
   else if(t.matches("[data-avativar]")) ativarPush();
   else if(t.matches("[data-avsair]")) desativarPush();
-  else if(t.matches("[data-avteste]")) navigator.serviceWorker.ready.then(r=>r.showNotification("Meu Ritmo",{body:"Teste: está tudo certo com as notificações 🔔",icon:"/icons/icon-192.png",tag:"teste"}));
+  else if(t.matches("[data-avteste]")) navigator.serviceWorker.ready.then(r=>r.showNotification("Meu Ritmo",{body:"Teste: está tudo certo com as notificações 🔔",icon:"/icons/icon-192.png",tag:"teste",silent:false,vibrate:[200,100,200]}));
 });
 document.addEventListener("change",e=>{
   const k=e.target.dataset&&e.target.dataset.avcfg; if(!k) return;

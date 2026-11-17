@@ -1,4 +1,5 @@
-/* Service worker do Meu Ritmo: só notificações (o app continua sempre online). */
+/* Service worker do Meu Ritmo: só notificações (o app continua sempre online).
+   Sem 'silent': o aparelho toca o som e vibra como qualquer notificação. */
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
@@ -7,7 +8,7 @@ self.addEventListener('push', e => {
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data && e.data.text() }; }
   e.waitUntil(self.registration.showNotification(d.title || 'Meu Ritmo', {
     body: d.body || '', icon: '/icons/icon-192.png', badge: '/icons/icon-192.png',
-    tag: d.tag, renotify: !!d.tag, data: { url: d.url || '/' }
+    tag: d.tag, renotify: !!d.tag, silent: false, vibrate: [200, 100, 200], data: { url: d.url || '/' }
   }));
 });
 
