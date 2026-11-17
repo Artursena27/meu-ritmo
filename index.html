@@ -375,7 +375,7 @@ body[data-g="home"] .controls{display:none}
 .mf-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#0b0616;background:var(--ok);border-radius:999px;padding:3px 9px}.mf-badge.alt{background:var(--warn)}
 .mf-tabs .ov{position:relative}.mf-tabs .ov::after{content:"";position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
 /* chat */
-.chatfab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:19;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;display:grid;place-items:center;box-shadow:0 8px 28px rgba(180,77,255,.55)}
+.chatfab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:35;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;display:grid;place-items:center;box-shadow:0 8px 28px rgba(180,77,255,.55)}
 .chatfab svg.i{width:28px;height:28px}.chatfab:hover{transform:translateY(-2px)}.chatfab .dot{position:absolute;top:8px;right:9px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #1a0b2e}
 .chatbox{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:30;width:min(400px,calc(100vw - 24px));height:min(600px,calc(100vh - 120px));display:flex;flex-direction:column;background:rgba(14,8,28,.97);backdrop-filter:blur(14px);border:1px solid var(--edge2);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
 .chathd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--edge)}.chathd .av{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--neon),var(--pink));display:grid;place-items:center;color:#fff;flex:none}.chathd b{display:block;font-family:var(--display);font-size:15px}.chathd span{font-size:12px;color:var(--muted)}.chathd .x{margin-left:auto;border:0;background:none;color:var(--muted);padding:6px;border-radius:10px}
@@ -394,6 +394,7 @@ body[data-g="home"] .controls{display:none}
 .chatform .cb{width:40px;height:40px;flex:none;border-radius:12px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--muted);display:grid;place-items:center;padding:0}
 .chatform .cb.go{background:linear-gradient(135deg,var(--neon),var(--neon2));border:0;color:#fff}.chatform .cb.rec{background:var(--bad);border:0;color:#fff;animation:dig 1.2s infinite}
 .chatform .cb:disabled{opacity:.45}
+.overlay:not([hidden]) ~ .chatfab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 @media (max-width:620px){ .chatbox{right:0;left:0;bottom:0;width:100%;height:min(88vh,100%);border-radius:22px 22px 0 0} .chatfab{width:54px;height:54px} body.chat-aberto .chatfab{display:none} }
 
 .onb{justify-content:center;align-items:flex-start;overflow-y:auto;padding:24px 12px}
@@ -599,7 +600,7 @@ body[data-g="home"] .controls{display:none}
     </div>
     <div class="acct-in acct-on" id="acctIn" hidden>
       <span class="acct-txt"><b>Sincronizado</b><span id="acctWho"></span></span>
-      <span class="acct-form" style="flex:0 1 auto"><button class="btn line" type="button" id="acctZap" hidden>Conectar WhatsApp</button><button class="btn line" type="button" id="acctLogout">Sair</button></span>
+      <span class="acct-form" style="flex:0 1 auto"><button class="btn" type="button" id="acctTreino"><svg class="i"><use href="#i-dumbbell"/></svg>Gerar novo treino</button><button class="btn line" type="button" id="acctZap" hidden>Conectar WhatsApp</button><button class="btn line" type="button" id="acctLogout">Sair</button></span>
       <p class="acct-msg" id="acctZapMsg" hidden></p>
     </div>
   </section>
@@ -2425,7 +2426,7 @@ const TREINO_GEN=(()=>{
   }
   return {gerar};
 })();
-let mfDay=null, mfReady=false, mfPending=null, treinoPlano=null, treinoHoje=null, treinoExtra={dias:{}}, mfMsg="";
+let mfDay=null, mfReady=false, mfPending=null, treinoPlano=null, treinoHoje=null, treinoExtra={dias:{}}, treinoHist={itens:[]}, mfMsg="";
 const mfF={mod:"musculacao",grupos:[],esporte:"",min:"",objetivo:"",nivel:"",idade:"",local:"",quando:"hoje",dias:[]};
 const TG=window.TreinoGen;
 const hojeIso=()=>isoOf(logicalToday());
@@ -2437,7 +2438,7 @@ function planoTreino(){
 }
 function salvarTreinoDoc(id,data){
   if(db) return db.doc("tracker/"+id).set(data).catch(()=>{ $("storeNote").textContent="Não consegui salvar o treino no servidor."; });
-  try{ localStorage.setItem("ritmo-treino-v1",JSON.stringify({treinoHoje,treinoExtra})); }catch(e){}
+  try{ localStorage.setItem("ritmo-treino-v1",JSON.stringify({treinoHoje,treinoExtra,treinoHist})); }catch(e){}
 }
 function exCard(e,i){
   return `<article class="mf-ex">
@@ -2474,6 +2475,25 @@ function mfFormHTML(){
     <div><div class="lbl">Ou peça do seu jeito ao assistente</div><div class="mf-ask" style="margin-top:6px"><input id="mfAsk" placeholder="Ex.: treino de perna sem impacto, tenho dor no joelho"><button class="btn line" type="button" data-mfask>Pedir ao assistente</button></div></div>
   </div></details>`;
 }
+function guardarNoHistorico(t){
+  const itens=[t,...((treinoHist&&treinoHist.itens)||[])].slice(0,40);
+  treinoHist={itens}; salvarTreinoDoc("treino_historico",treinoHist);
+}
+function histHTML(){
+  const it=(treinoHist&&treinoHist.itens)||[]; if(!it.length) return "";
+  const dm=iso=>{ const [y,m,d]=String(iso||"").split("-"); return d?d+"/"+m:""; };
+  return `<details class="panelc mf-build" id="mfHist" ${mfF.histAberto?"open":""}>
+    <summary>${ICON("book")}Treinos anteriores <span class="mono hint" style="font-weight:500">(${it.length})</span><svg class="i chev"><use href="#i-down"/></svg></summary>
+    <div class="mf-form">${it.map((t,k)=>`<details class="panelc" style="padding:10px 12px">
+      <summary style="cursor:pointer"><b>${esc(dm(t.data))} · ${esc(t.nome)}</b> <span class="hint">${esc(t.perfil||"")}${t.quando==="rotina"&&t.dias&&t.dias.length?" · rotina: "+t.dias.map(d=>DAYS[d].slice(0,3)).join(", "):""}${t.fonte==="agente"?" · pelo assistente":""}</span></summary>
+      <ol class="hint" style="margin:8px 0;padding-left:20px">${(t.ex||[]).map(e=>`<li><b style="color:var(--ink)">${esc(e.n)}</b> · ${e.s>1?e.s+"×":""}${esc(e.r)}${e.d&&e.d!=="—"?" · descanso "+esc(e.d):""}</li>`).join("")}</ol>
+      <div class="row"><button class="btn line" data-mfhist="${k}" style="padding:5px 10px;font-size:12px">Usar como treino de hoje</button></div>
+    </details>`).join("")}</div></details>`;
+}
+function abrirMontador(){
+  view="treino"; render(); mfF.aberto=true; renderMfit();
+  const b=$("mfBuild"); if(b){ b.open=true; b.scrollIntoView({behavior:"smooth",block:"start"}); }
+}
 function renderMfit(){
   const P=planoTreino(), dd=Object.keys(P.dias||{}).map(Number).sort((a,b)=>a-b);
   const refazer=`<button class="btn line" data-mfgen="1">${P.gerado?"Refazer meu treino":"Gerar um treino para mim"}</button>`;
@@ -2486,7 +2506,7 @@ function renderMfit(){
     <div class="mf-list">${th.ex.map(exCard).join("")}</div>
     <div class="row">${th.lancado?`<span class="mf-badge">${ICON("check")}Lançado no registro</span>`:th.registro?`<button class="btn" data-mflancar>${ICON("check")}Fiz! Lançar no registro</button>`:""}<button class="btn line" data-mfdesc>Descartar</button></div>
   </section>`;
-  h+=mfFormHTML();
+  h+=mfFormHTML()+histHTML();
   if(!dd.length){ $("mfBody").innerHTML=h+`<p class="hint">Nenhum dia de treino definido. Escolha os dias em "Meus dados" do cadastro e gere seu treino.</p>${refazer}`; return; }
   const N=nowInfo(); if(mfDay===null||!dd.includes(mfDay)) mfDay = dd.includes(N.d) ? N.d : dd[0];
   const dia=P.dias[mfDay];
@@ -2511,6 +2531,7 @@ function mfMontar(){
   const t=TG.montarTreino({modalidade:mfF.mod, grupos:mfF.grupos, esporte:mfF.esporte, min:+mfF.min||undefined,
     nivel:mfF.nivel||perfil.nivel||"iniciante", idade:+mfF.idade||settings.age, objetivo:mfF.objetivo||undefined, local:mfF.local||perfil.local||"academia"});
   const agora=new Date().toISOString();
+  guardarNoHistorico({...t,data:hojeIso(),criadoEm:agora,fonte:"app",quando:mfF.quando,dias:mfF.quando==="rotina"?[...mfF.dias]:[]});
   if(mfF.quando==="hoje"){
     treinoHoje={...t,data:hojeIso(),criadoEm:agora,fonte:"app"}; salvarTreinoDoc("treino_hoje",treinoHoje);
     mfF.aberto=false; renderMfit(); $("mfHoje")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -2543,7 +2564,8 @@ window.addEventListener("message",e=>{
   mfReady=true;
   if(mfPending){ $("mfFrame").contentWindow.postMessage({mfEx:mfPending},"*"); mfPending=null; }
 });
-$("mfit").addEventListener("toggle",e=>{ if(e.target.id==="mfBuild") mfF.aberto=e.target.open; },true);
+$("mfit").addEventListener("toggle",e=>{ if(e.target.id==="mfBuild") mfF.aberto=e.target.open; if(e.target.id==="mfHist") mfF.histAberto=e.target.open; },true);
+$("acctTreino").onclick=abrirMontador;
 $("mfit").addEventListener("input",e=>{ const k=e.target.dataset&&e.target.dataset.mff; if(k) mfF[k]=e.target.value; });
 $("mfit").addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="mfAsk"){ e.preventDefault(); document.querySelector("[data-mfask]")?.click(); } });
 $("mfit").addEventListener("click",e=>{
@@ -2558,6 +2580,7 @@ $("mfit").addEventListener("click",e=>{
   if(t.matches("[data-mfmontar]")){ mfMontar(); return; }
   if(t.matches("[data-mfask]")){ const v=($("mfAsk")?.value||"").trim(); if(v) chatPedir(/treino/i.test(v)?v:"Monte um treino: "+v); else $("mfAsk")?.focus(); return; }
   if(t.matches("[data-mflancar]")){ mfLancar(); return; }
+  if(t.dataset.mfhist!=null){ const v=(treinoHist.itens||[])[+t.dataset.mfhist]; if(v){ const {quando,dias,lancado,...r}=v; treinoHoje={...r,data:hojeIso(),criadoEm:new Date().toISOString()}; salvarTreinoDoc("treino_hoje",treinoHoje); renderMfit(); $("mfHoje")?.scrollIntoView({behavior:"smooth",block:"start"}); } return; }
   if(t.matches("[data-mfdesc]")){ treinoHoje=null; if(db) db.doc("tracker/treino_hoje").delete().catch(()=>{}); else salvarTreinoDoc("treino_hoje",null); renderMfit(); return; }
   if(t.dataset.mforig!=null){ const d=t.dataset.mforig; treinoExtra={dias:{...((treinoExtra&&treinoExtra.dias)||{})}}; delete treinoExtra.dias[d]; salvarTreinoDoc("treino_extra",treinoExtra); renderMfit(); return; }
   if(t.matches("[data-mfgen]")){ if(typeof abrirOnb==="function"&&window.__sbUser){ abrirOnb(); } else { treinoPlano=TREINO_GEN.gerar({dias:(rotina.treino||{}).dias||[],min:(rotina.treino||{}).min||60,nivel:perfil.nivel,local:perfil.local,goal:settings.goal}); mfDay=null; renderMfit(); } return; }
@@ -2755,13 +2778,13 @@ function acctUi(sb,session){
     if(sb){ acctUi(sb,session); sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_IN"&&!session) location.reload(); if(ev==="SIGNED_OUT") location.reload(); }); }
     if(session){ db=supaDb(sb,session.user.id); window.__sbUser=session.user; }
   }
-  if(!db){ loadLocal(); loadAgLocal(); try{ const t=JSON.parse(localStorage.getItem("ritmo-treino-v1")||"null"); if(t){ treinoHoje=t.treinoHoje||null; treinoExtra=t.treinoExtra||{dias:{}}; } }catch(e){} render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
+  if(!db){ loadLocal(); loadAgLocal(); try{ const t=JSON.parse(localStorage.getItem("ritmo-treino-v1")||"null"); if(t){ treinoHoje=t.treinoHoje||null; treinoExtra=t.treinoExtra||{dias:{}}; treinoHist=t.treinoHist||{itens:[]}; } }catch(e){} render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
   const timer=setTimeout(()=>{ $("storeNote").textContent="Demorando para carregar seus dias…"; },10000);
   db.collection("tracker").onSnapshot(snap=>{
     clearTimeout(timer); $("storeNote").textContent="";
-    const next={}, ag={}; let rot=null, base=null; treinoHoje=null; treinoExtra={dias:{}};
+    const next={}, ag={}; let rot=null, base=null; treinoHoje=null; treinoExtra={dias:{}}; treinoHist={itens:[]};
     let temPerfil=false, inb=[];
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="treino_hoje") treinoHoje=v&&v.ex?v:null; else if(id==="treino_extra") treinoExtra=v&&v.dias?v:{dias:{}}; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="treino_hoje") treinoHoje=v&&v.ex?v:null; else if(id==="treino_extra") treinoExtra=v&&v.dias?v:{dias:{}}; else if(id==="treino_historico") treinoHist=v&&Array.isArray(v.itens)?v:{itens:[]}; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
     inbox={itens:inb}; days=next; agMerge(ag,rot); safeRender();
     if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
