@@ -378,7 +378,7 @@ body[data-g="home"] .controls{display:none}
 .chatfab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:35;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;display:grid;place-items:center;box-shadow:0 8px 28px rgba(180,77,255,.55)}
 .chatfab svg.i{width:28px;height:28px}.chatfab:hover{transform:translateY(-2px)}.chatfab .dot{position:absolute;top:8px;right:9px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #1a0b2e}
 .chatbox{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:30;width:min(400px,calc(100vw - 24px));height:min(600px,calc(100vh - 120px));display:flex;flex-direction:column;background:rgba(14,8,28,.97);backdrop-filter:blur(14px);border:1px solid var(--edge2);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
-.chathd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--edge)}.chathd .av{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--neon),var(--pink));display:grid;place-items:center;color:#fff;flex:none}.chathd b{display:block;font-family:var(--display);font-size:15px}.chathd span{font-size:12px;color:var(--muted)}.chathd .x{margin-left:auto;border:0;background:none;color:var(--muted);padding:6px;border-radius:10px}
+.chathd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--edge);cursor:grab;touch-action:none;user-select:none}.chathd.arrastando,.chatfab.arrastando{cursor:grabbing}.chatfab{touch-action:none}.chatbox.arrastando{transition:none;opacity:.95}.chathd .av{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--neon),var(--pink));display:grid;place-items:center;color:#fff;flex:none}.chathd b{display:block;font-family:var(--display);font-size:15px}.chathd span{font-size:12px;color:var(--muted)}.chathd .x{margin-left:auto;border:0;background:none;color:var(--muted);padding:6px;border-radius:10px}
 .chatlog{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
 .cmsg{max-width:85%;padding:9px 12px;border-radius:16px;font-size:14px;line-height:1.45;overflow-wrap:anywhere;white-space:normal}
 .cmsg.eu{align-self:flex-end;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border-bottom-right-radius:5px}
@@ -395,7 +395,7 @@ body[data-g="home"] .controls{display:none}
 .chatform .cb.go{background:linear-gradient(135deg,var(--neon),var(--neon2));border:0;color:#fff}.chatform .cb.rec{background:var(--bad);border:0;color:#fff;animation:dig 1.2s infinite}
 .chatform .cb:disabled{opacity:.45}
 .overlay:not([hidden]) ~ .chatfab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-@media (max-width:620px){ .chatbox{right:0;left:0;bottom:0;width:100%;height:min(88vh,100%);border-radius:22px 22px 0 0} .chatfab{width:54px;height:54px} body.chat-aberto .chatfab{display:none} }
+@media (max-width:620px){ .chatbox{top:auto!important;right:0!important;left:0!important;bottom:0!important;width:100%;height:min(88vh,100%);border-radius:22px 22px 0 0} .chatfab{width:54px;height:54px} body.chat-aberto .chatfab{display:none} }
 
 .onb{justify-content:center;align-items:flex-start;overflow-y:auto;padding:24px 12px}
 .onb-card{width:min(640px,100%);background:linear-gradient(180deg,#160a2b,#0b0617);border:1px solid var(--edge2);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -2821,7 +2821,7 @@ function chatSugs(){
   box.innerHTML=s.map(x=>`<button type="button">${esc(x)}</button>`).join("");
 }
 async function chatAbrir(){
-  CHAT.aberto=true; $("chatBox").hidden=false; $("chatFab").setAttribute("aria-expanded","true"); document.body.classList.add("chat-aberto"); $("chatDot").hidden=true;
+  CHAT.aberto=true; $("chatBox").hidden=false; $("chatBox")._reposicionar?.(); $("chatFab").setAttribute("aria-expanded","true"); document.body.classList.add("chat-aberto"); $("chatDot").hidden=true;
   setTimeout(()=>$("chatIn").focus(),50);
   if(CHAT.carregado) return;
   const tk=await chatToken();
@@ -2873,7 +2873,40 @@ function chatPrevDraw(){
   p.innerHTML=`${a.tipo==="imagem"?`<img src="${a.src}" alt="">`:`<span>🎬</span>`}<span>${a.tipo==="imagem"?"Foto":"Vídeo"} anexad${a.tipo==="imagem"?"a":"o"}. Sem texto vira figurinha; com texto, eu analiso.</span><button type="button" aria-label="Tirar anexo">${ICON("x")}</button>`;
   p.querySelector("button").onclick=()=>{ CHAT.anexo=null; chatPrevDraw(); };
 }
-$("chatFab").onclick=()=>CHAT.aberto?chatFechar():chatAbrir();
+/* Arrastar: o botão vai para qualquer canto da tela; a janela, pelo cabeçalho (no PC). A posição fica salva. */
+function arrastavel(el,alca,chave,{aoClicar,soPC=false}={}){
+  const pos=()=>{ try{ return JSON.parse(localStorage.getItem(chave)||"null"); }catch(e){ return null; } };
+  const aplicar=p=>{
+    if(!p||(soPC&&innerWidth<=620)){ ["left","top","right","bottom"].forEach(k=>el.style[k]=""); return; }
+    const r=el.getBoundingClientRect(), w=r.width||60, h=r.height||60;
+    el.style.left=Math.min(Math.max(6,p.x),innerWidth-w-6)+"px"; el.style.top=Math.min(Math.max(6,p.y),innerHeight-h-6)+"px";
+    el.style.right="auto"; el.style.bottom="auto";
+  };
+  el._reposicionar=()=>aplicar(pos());
+  let ini=null, moveu=false;
+  alca.addEventListener("pointerdown",e=>{
+    if(e.button!==0||(soPC&&innerWidth<=620)||(alca!==el&&e.target.closest("button"))) return;
+    const r=el.getBoundingClientRect(); ini={x:e.clientX,y:e.clientY,dx:e.clientX-r.left,dy:e.clientY-r.top}; moveu=false;
+    alca.setPointerCapture(e.pointerId);
+  });
+  alca.addEventListener("pointermove",e=>{
+    if(!ini) return;
+    if(!moveu&&Math.hypot(e.clientX-ini.x,e.clientY-ini.y)<6) return;
+    moveu=true; el.classList.add("arrastando"); alca.classList.add("arrastando");
+    aplicar({x:e.clientX-ini.dx,y:e.clientY-ini.dy});
+  });
+  const soltar=e=>{
+    if(!ini) return; ini=null; el.classList.remove("arrastando"); alca.classList.remove("arrastando");
+    if(moveu){ const r=el.getBoundingClientRect(); try{ localStorage.setItem(chave,JSON.stringify({x:r.left,y:r.top})); }catch(err){} }
+    else if(aoClicar&&e.type==="pointerup") aoClicar();
+  };
+  alca.addEventListener("pointerup",soltar); alca.addEventListener("pointercancel",soltar);
+  if(aoClicar) el.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); aoClicar(); } });
+  addEventListener("resize",()=>aplicar(pos()));
+  aplicar(pos());
+}
+arrastavel($("chatFab"),$("chatFab"),"ritmo-chat-botao",{aoClicar:()=>CHAT.aberto?chatFechar():chatAbrir()});
+arrastavel($("chatBox"),$("chatBox").querySelector(".chathd"),"ritmo-chat-janela",{soPC:true});
 $("chatX").onclick=chatFechar;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&CHAT.aberto&&$("overlay").hidden) chatFechar(); });
 $("chatSug").onclick=e=>{ const b=e.target.closest("button"); if(b) chatEnviar({texto:b.textContent},{texto:b.textContent}); };
