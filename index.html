@@ -367,6 +367,34 @@ body[data-g="home"] .controls{display:none}
 .mf-ex details p{font-size:13.5px;color:var(--muted);line-height:1.5;margin:8px 0 0}
 .mf-chip{border:1px solid var(--edge);background:rgba(0,0,0,.25);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:#d7a6ff}
 .mf-viewer{display:flex;flex-direction:column;gap:6px;border:1px solid var(--edge);border-radius:18px;overflow:hidden;background:var(--glass);min-width:0}.mf-vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px 0}.mf-vh b{font-size:15px}.mf-viewer iframe{width:100%;height:min(62vh,520px);border:0;display:block;background:transparent}.mf-btn{margin-top:8px;align-self:flex-start;border:1px solid var(--neon);background:transparent;color:#d7a6ff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}.tli.free{cursor:pointer}.tli.free.open{cursor:default;background:rgba(62,232,165,.09)}.frform{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;min-width:0}.frform input[data-role=fr_t]{width:100%}.frform .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.frform select{min-width:0;max-width:100%}
+.mf-build>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:16px}.mf-build>summary::-webkit-details-marker{display:none}.mf-build>summary .chev{margin-left:auto;transition:transform .2s}.mf-build[open]>summary .chev{transform:rotate(180deg)}
+.mf-form{display:flex;flex-direction:column;gap:12px;margin-top:6px}.mf-form .lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.02em;text-transform:uppercase}.mf-form .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.mf-form .fgrid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:600}.mf-form .fgrid input,.mf-form .fgrid select{width:100%;min-width:0}
+.mf-ask{display:flex;gap:8px;flex-wrap:wrap}.mf-ask input{flex:1 1 220px;min-width:0}
+.mf-err{color:var(--bad);font-size:13px;margin:0}
+.mf-today{border-color:var(--edge2);background:linear-gradient(160deg,rgba(180,77,255,.14),rgba(255,255,255,.03))}.mf-today .row{justify-content:flex-start}
+.mf-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#0b0616;background:var(--ok);border-radius:999px;padding:3px 9px}.mf-badge.alt{background:var(--warn)}
+.mf-tabs .ov{position:relative}.mf-tabs .ov::after{content:"";position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
+/* chat */
+.chatfab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:19;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;display:grid;place-items:center;box-shadow:0 8px 28px rgba(180,77,255,.55)}
+.chatfab svg.i{width:28px;height:28px}.chatfab:hover{transform:translateY(-2px)}.chatfab .dot{position:absolute;top:8px;right:9px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #1a0b2e}
+.chatbox{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:30;width:min(400px,calc(100vw - 24px));height:min(600px,calc(100vh - 120px));display:flex;flex-direction:column;background:rgba(14,8,28,.97);backdrop-filter:blur(14px);border:1px solid var(--edge2);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
+.chathd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--edge)}.chathd .av{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--neon),var(--pink));display:grid;place-items:center;color:#fff;flex:none}.chathd b{display:block;font-family:var(--display);font-size:15px}.chathd span{font-size:12px;color:var(--muted)}.chathd .x{margin-left:auto;border:0;background:none;color:var(--muted);padding:6px;border-radius:10px}
+.chatlog{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.cmsg{max-width:85%;padding:9px 12px;border-radius:16px;font-size:14px;line-height:1.45;overflow-wrap:anywhere;white-space:normal}
+.cmsg.eu{align-self:flex-end;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border-bottom-right-radius:5px}
+.cmsg.ele{align-self:flex-start;background:var(--glass2);border:1px solid var(--edge);border-bottom-left-radius:5px}
+.cmsg.ele a{color:#e3c4ff}.cmsg.trans{align-self:flex-end;background:none;border:1px dashed var(--edge2);color:var(--muted);font-style:italic;font-size:13px}
+.cmsg img,.cmsg video{display:block;max-width:220px;max-height:220px;border-radius:12px}.cmsg.fig{background:none;border:0;padding:0}
+.cmsg.dig{display:flex;gap:4px;align-items:center}.cmsg.dig i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:dig 1s infinite}.cmsg.dig i:nth-child(2){animation-delay:.15s}.cmsg.dig i:nth-child(3){animation-delay:.3s}
+@keyframes dig{0%,100%{opacity:.25}50%{opacity:1}}
+.chatsug{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}.chatsug button{border:1px solid var(--edge2);background:rgba(180,77,255,.1);color:#e3c4ff;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.chatprev{display:flex;align-items:center;gap:8px;padding:6px 14px;border-top:1px solid var(--edge);font-size:12.5px;color:var(--muted)}.chatprev img{width:44px;height:44px;object-fit:cover;border-radius:8px}.chatprev button{margin-left:auto;border:0;background:none;color:var(--muted)}
+.chatform{display:flex;align-items:flex-end;gap:6px;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--edge)}
+.chatform textarea{flex:1;min-height:40px;max-height:120px;resize:none;border-radius:14px;padding:9px 12px;font-size:14px}
+.chatform .cb{width:40px;height:40px;flex:none;border-radius:12px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--muted);display:grid;place-items:center;padding:0}
+.chatform .cb.go{background:linear-gradient(135deg,var(--neon),var(--neon2));border:0;color:#fff}.chatform .cb.rec{background:var(--bad);border:0;color:#fff;animation:dig 1.2s infinite}
+.chatform .cb:disabled{opacity:.45}
+@media (max-width:620px){ .chatbox{right:0;left:0;bottom:0;width:100%;height:min(88vh,100%);border-radius:22px 22px 0 0} .chatfab{width:54px;height:54px} body.chat-aberto .chatfab{display:none} }
 
 .onb{justify-content:center;align-items:flex-start;overflow-y:auto;padding:24px 12px}
 .onb-card{width:min(640px,100%);background:linear-gradient(180deg,#160a2b,#0b0617);border:1px solid var(--edge2);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -494,6 +522,10 @@ body[data-g="home"] .controls{display:none}
   <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.8-9.94A6 6 0 0 1 17.7 7.3 4.5 4.5 0 0 1 17.5 16H11l-4 3.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
@@ -744,6 +776,21 @@ body[data-g="home"] .controls{display:none}
   </div>
   <div class="savebar"><span class="toast" id="toast"></span><div class="row"><button class="btn line" id="clearDay">Limpar dia</button><button class="btn" id="save">Salvar</button></div></div>
 </div>
+
+<button class="chatfab" id="chatFab" type="button" aria-label="Conversar com o assistente" aria-expanded="false" aria-controls="chatBox"><svg class="i"><use href="#i-chat"/></svg><span class="dot" hidden id="chatDot"></span></button>
+<section class="chatbox" id="chatBox" hidden role="dialog" aria-label="Assistente do Meu Ritmo">
+  <header class="chathd"><div class="av"><svg class="i"><use href="#i-chat"/></svg></div><div><b>Assistente</b><span id="chatSub">O mesmo do WhatsApp, aqui no app</span></div><button class="x" id="chatX" type="button" aria-label="Fechar chat"><svg class="i"><use href="#i-x"/></svg></button></header>
+  <div class="chatlog" id="chatLog" aria-live="polite"></div>
+  <div class="chatsug" id="chatSug"></div>
+  <div class="chatprev" id="chatPrev" hidden></div>
+  <form class="chatform" id="chatForm" autocomplete="off">
+    <button class="cb" type="button" id="chatAnexo" aria-label="Anexar foto ou vídeo"><svg class="i"><use href="#i-clip"/></svg></button>
+    <input type="file" id="chatFile" accept="image/*,video/*" hidden>
+    <textarea id="chatIn" rows="1" placeholder="Escreva ou grave um áudio…" aria-label="Mensagem"></textarea>
+    <button class="cb" type="button" id="chatMic" aria-label="Gravar áudio"><svg class="i"><use href="#i-mic"/></svg></button>
+    <button class="cb go" type="submit" id="chatEnviar" aria-label="Enviar"><svg class="i"><use href="#i-send"/></svg></button>
+  </form>
+</section>
 
 <script>
 /* Base de alimentos: [nome, palavras-chave, kcal por medida, porção média (medida:qtd), etiqueta]
@@ -1021,6 +1068,7 @@ const MEALS=[["cafe","Café da manhã"],["almoco","Almoço"],["lanche","Lanche"]
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="treino-gen.js"></script>
 <script>
 const START = new Date(2026,10,9);
 const WEEKS = Math.max(4, Math.floor((new Date().setHours(0,0,0,0)-START)/(7*864e5))+1);
@@ -2377,31 +2425,111 @@ const TREINO_GEN=(()=>{
   }
   return {gerar};
 })();
-let mfDay=null, mfReady=false, mfPending=null, treinoPlano=null;
-const planoTreino=()=>treinoPlano||MF_DATA.MFIT;
+let mfDay=null, mfReady=false, mfPending=null, treinoPlano=null, treinoHoje=null, treinoExtra={dias:{}}, mfMsg="";
+const mfF={mod:"musculacao",grupos:[],esporte:"",min:"",objetivo:"",nivel:"",idade:"",local:"",quando:"hoje",dias:[]};
+const TG=window.TreinoGen;
+const hojeIso=()=>isoOf(logicalToday());
+/* O plano da pessoa (ou a ficha fixa) com os dias trocados por cima (treino_extra). */
+function planoTreino(){
+  const base=treinoPlano||MF_DATA.MFIT, extra=(treinoExtra&&treinoExtra.dias)||{};
+  const dias={...base.dias}; Object.keys(extra).forEach(k=>{ dias[k]={...extra[k],_extra:true}; });
+  return {...base,dias};
+}
+function salvarTreinoDoc(id,data){
+  if(db) return db.doc("tracker/"+id).set(data).catch(()=>{ $("storeNote").textContent="Não consegui salvar o treino no servidor."; });
+  try{ localStorage.setItem("ritmo-treino-v1",JSON.stringify({treinoHoje,treinoExtra})); }catch(e){}
+}
+function exCard(e,i){
+  return `<article class="mf-ex">
+    <div class="mf-n"><span class="mf-i">${i+1}</span><div><b>${esc(e.n)}</b><small>${e.s>1?e.s+"×":""}${esc(e.r)}</small></div></div>
+    <div class="mf-meta"><span>${/esforço|^Ritmo/.test(String(e.c))?"Intensidade":"Carga"} <b>${esc(e.c)}</b></span>${e.d&&e.d!=="—"?`<span>Descanso <b>${esc(e.d)}</b></span>`:""}${e.m?`<span>Método <b>${esc(e.m)}</b></span>`:""}</div>
+    ${e.a===null&&!e.o?"":`<details><summary>Como executar</summary>${e.a===null?"":`<button class="mf-btn" data-mfx="${esc(e.a||e.n)}">${ICON("dumbbell")}Ver execução animada</button>`}${e.o?`<p>${esc(e.o)}</p>`:""}</details>`}
+  </article>`;
+}
+function mfFormHTML(){
+  const p=(v,l,on,attr)=>`<button type="button" ${attr}="${v}" aria-pressed="${on}">${l}</button>`;
+  const aer=mfF.mod==="aerobico";
+  const nivel=mfF.nivel||perfil.nivel||"iniciante", local=mfF.local||perfil.local||"academia", idade=mfF.idade||settings.age||"";
+  const obj=mfF.objetivo||(aer?"saude":mfF.mod==="resistencia"?"resistencia":"hipertrofia");
+  const treinoDias=(rotina.treino||{}).dias||[];
+  return `<details class="panelc mf-build" id="mfBuild" ${mfF.aberto?"open":""}>
+  <summary>${ICON("bolt")}Montar treino<svg class="i chev"><use href="#i-down"/></svg></summary>
+  <div class="mf-form">
+    <p class="hint">Escolha o que quer treinar. O treino sai na hora, ajustado à sua idade, ao seu tempo de academia e ao objetivo.</p>
+    <div><div class="lbl">Tipo</div><div class="pillbar sm" role="group" aria-label="Tipo de treino" style="display:inline-flex;margin-top:6px">
+      ${p("musculacao","Grupo muscular",mfF.mod==="musculacao","data-mfmod")}${p("resistencia","Resistência",mfF.mod==="resistencia","data-mfmod")}${p("aerobico","Aeróbico",aer,"data-mfmod")}</div></div>
+    ${aer?`<div><div class="lbl">Qual aeróbico?</div><div class="chips" style="margin-top:6px">${TG.ESPORTES.map(e=>p(e,TG.NOME_ESPORTE[e],mfF.esporte===e,"data-mfesp")).join("")}</div></div>`
+      :`<div><div class="lbl">Grupos musculares <span style="text-transform:none;font-weight:500">(nenhum = corpo todo)</span></div><div class="chips" style="margin-top:6px">${TG.GRUPOS_TREINO.map(g=>p(g,g,mfF.grupos.includes(g),"data-mfgr")).join("")}</div></div>`}
+    <div class="fgrid">
+      <label>Tempo (min)<input type="number" min="15" max="150" step="5" data-mff="min" value="${esc(mfF.min||(aer?(mfF.esporte==="natacao"?40:30):mfF.mod==="resistencia"?40:((rotina.treino||{}).min||60)))}"></label>
+      <label>Tempo de academia<select data-mff="nivel">${[["iniciante","Menos de 6 meses"],["intermediario","6 meses a 2 anos"],["avancado","Mais de 2 anos"]].map(([v,l])=>`<option value="${v}" ${nivel===v?"selected":""}>${l}</option>`).join("")}</select></label>
+      <label>Idade<input type="number" min="10" max="99" data-mff="idade" value="${esc(idade)}"></label>
+      <label>Objetivo<select data-mff="objetivo">${[["hipertrofia","Ganhar massa"],["emagrecer","Emagrecer"],["forca","Força"],["resistencia","Resistência"],["saude","Saúde e condicionamento"]].map(([v,l])=>`<option value="${v}" ${obj===v?"selected":""}>${l}</option>`).join("")}</select></label>
+      ${aer?"":`<label>Onde<select data-mff="local"><option value="academia" ${local==="academia"?"selected":""}>Academia</option><option value="casa" ${local==="casa"?"selected":""}>Em casa</option></select></label>`}
+    </div>
+    <div><div class="lbl">Para quando?</div><div class="pillbar sm" role="group" aria-label="Para quando" style="display:inline-flex;margin-top:6px">${p("hoje","Só hoje",mfF.quando==="hoje","data-mfq")}${p("rotina","Fixo na rotina",mfF.quando==="rotina","data-mfq")}</div>
+      ${mfF.quando==="rotina"?`<div class="chips" style="margin-top:8px">${DAYS.map((n,i)=>p(i,n.slice(0,3)+(treinoDias.includes(i)?" •":""),mfF.dias.includes(i),"data-mfdia")).join("")}</div><p class="hint" style="margin-top:6px">O treino desses dias é trocado por este. Dá para voltar ao original depois. • = seus dias de treino.</p>`:""}</div>
+    ${mfMsg?`<p class="mf-err" role="alert">${esc(mfMsg)}</p>`:""}
+    <div class="row"><button class="btn" type="button" data-mfmontar>${ICON("dumbbell")}Montar treino</button></div>
+    <div><div class="lbl">Ou peça do seu jeito ao assistente</div><div class="mf-ask" style="margin-top:6px"><input id="mfAsk" placeholder="Ex.: treino de perna sem impacto, tenho dor no joelho"><button class="btn line" type="button" data-mfask>Pedir ao assistente</button></div></div>
+  </div></details>`;
+}
 function renderMfit(){
   const P=planoTreino(), dd=Object.keys(P.dias||{}).map(Number).sort((a,b)=>a-b);
   const refazer=`<button class="btn line" data-mfgen="1">${P.gerado?"Refazer meu treino":"Gerar um treino para mim"}</button>`;
-  if(!dd.length){ $("mfBody").innerHTML=`<div class="mf-head"><h2>Treino</h2><p class="hint">Nenhum dia de treino definido. Escolha os dias em "Meus dados" do cadastro e gere seu treino.</p></div>${refazer}`; return; }
+  const th=treinoHoje&&treinoHoje.data===hojeIso()&&treinoHoje.ex?treinoHoje:null;
+  let h=`<div class="mf-head"><h2>Treino</h2><p class="hint">${esc(P.ficha)} · ${esc(P.objetivo)}</p></div>`;
+  if(th) h+=`<section class="panelc mf-today" id="mfHoje">
+    <h3>${ICON("bolt")}Treino de hoje · ${esc(th.nome)}</h3>
+    ${th.perfil?`<p class="hint">${esc(th.perfil)}${th.fonte==="agente"?" · montado pelo assistente":""}</p>`:""}
+    ${th.obs?`<p class="hint">${esc(th.obs)}</p>`:""}
+    <div class="mf-list">${th.ex.map(exCard).join("")}</div>
+    <div class="row">${th.lancado?`<span class="mf-badge">${ICON("check")}Lançado no registro</span>`:th.registro?`<button class="btn" data-mflancar>${ICON("check")}Fiz! Lançar no registro</button>`:""}<button class="btn line" data-mfdesc>Descartar</button></div>
+  </section>`;
+  h+=mfFormHTML();
+  if(!dd.length){ $("mfBody").innerHTML=h+`<p class="hint">Nenhum dia de treino definido. Escolha os dias em "Meus dados" do cadastro e gere seu treino.</p>${refazer}`; return; }
   const N=nowInfo(); if(mfDay===null||!dd.includes(mfDay)) mfDay = dd.includes(N.d) ? N.d : dd[0];
   const dia=P.dias[mfDay];
-  const tabs=dd.map(i=>`<button data-mf="${i}" aria-pressed="${i===mfDay}">${DAYS[i].slice(0,3)}</button>`).join("");
-  const exs=dia.ex.map((e,i)=>`<article class="mf-ex">
-    <div class="mf-n"><span class="mf-i">${i+1}</span><div><b>${esc(e.n)}</b><small>${e.s}×${esc(e.r)}</small></div></div>
-    <div class="mf-meta"><span>Carga <b>${esc(e.c)}</b></span><span>Descanso <b>${esc(e.d)}</b></span>${e.m?`<span>Método <b>${esc(e.m)}</b></span>`:""}</div>
-    <details><summary>Como executar</summary><button class="mf-btn" data-mfx="${esc(e.a||e.n)}">${ICON("dumbbell")}Ver execução animada</button>${e.o?`<p>${esc(e.o)}</p>`:""}</details>
-  </article>`).join("");
-  $("mfBody").innerHTML=`
-  <div class="mf-head"><h2>Treino</h2><p class="hint">${esc(P.ficha)} · ${esc(P.objetivo)}</p></div>
-  <div class="pillbar sm" role="group" aria-label="Dia do treino">${tabs}</div>
+  const tabs=dd.map(i=>`<button data-mf="${i}" aria-pressed="${i===mfDay}" class="${P.dias[i]._extra?"ov":""}">${DAYS[i].slice(0,3)}</button>`).join("");
+  h+=`<div class="pillbar sm mf-tabs" role="group" aria-label="Dia do treino">${tabs}</div>
   <section class="panelc">
     <h3>${ICON("dumbbell")}${esc(dia.nome)}</h3>
-    <div class="chips">${dia.grupos.map(g=>`<span class="mf-chip">${esc(g)}</span>`).join("")}</div>
+    ${dia._extra?`<div class="row"><span class="mf-badge alt">Trocado ${dia.fonte==="agente"?"pelo assistente":"por você"}</span><button class="btn line" data-mforig="${mfDay}" style="padding:5px 10px;font-size:12px">Voltar ao original</button></div>`:""}
+    <div class="chips">${(dia.grupos||[]).map(g=>`<span class="mf-chip">${esc(g)}</span>`).join("")}</div>
     ${dia.obs?`<p class="hint">${esc(dia.obs)}</p>`:""}
     <details><summary class="hint">Orientações gerais</summary><p class="hint">${esc(P.orient)}</p></details>
   </section>
-  <div class="mf-list">${exs}</div>
+  <div class="mf-list">${(dia.ex||[]).map(exCard).join("")}</div>
   <p class="hint" style="margin-top:12px">${refazer}</p>`;
+  $("mfBody").innerHTML=h;
+}
+function mfMontar(){
+  if(!TG){ mfMsg="Não carreguei o montador. Recarregue a página."; renderMfit(); return; }
+  if(mfF.mod==="aerobico"&&!mfF.esporte){ mfMsg="Escolha qual aeróbico: corrida, natação, bike…"; renderMfit(); return; }
+  if(mfF.quando==="rotina"&&!mfF.dias.length){ mfMsg="Escolha em quais dias da semana esse treino fica."; renderMfit(); return; }
+  mfMsg="";
+  const t=TG.montarTreino({modalidade:mfF.mod, grupos:mfF.grupos, esporte:mfF.esporte, min:+mfF.min||undefined,
+    nivel:mfF.nivel||perfil.nivel||"iniciante", idade:+mfF.idade||settings.age, objetivo:mfF.objetivo||undefined, local:mfF.local||perfil.local||"academia"});
+  const agora=new Date().toISOString();
+  if(mfF.quando==="hoje"){
+    treinoHoje={...t,data:hojeIso(),criadoEm:agora,fonte:"app"}; salvarTreinoDoc("treino_hoje",treinoHoje);
+    mfF.aberto=false; renderMfit(); $("mfHoje")?.scrollIntoView({behavior:"smooth",block:"start"});
+  } else {
+    treinoExtra={dias:{...((treinoExtra&&treinoExtra.dias)||{})}};
+    mfF.dias.forEach(d=>{ treinoExtra.dias[d]={...t,fonte:"app",criadoEm:agora}; });
+    salvarTreinoDoc("treino_extra",treinoExtra); mfDay=mfF.dias[0]; mfF.aberto=false; renderMfit();
+    document.querySelector(".mf-tabs")?.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+}
+async function mfLancar(){
+  const th=treinoHoje; if(!th||!th.registro) return;
+  const N=nowInfo(), id=idOf(N.w,N.d);
+  const day=JSON.parse(JSON.stringify(days[id]||{treino:{grupos:[],intensidade:"",min:60},cardio:[],extras:[],comidaTexto:"",comidas:[],dica:""}));
+  if(th.registro.treino) day.treino={...th.registro.treino};
+  if(th.registro.cardio) day.cardio=[...(day.cardio||[]),...th.registro.cardio];
+  days[id]=day;
+  try{ await persist(id,day); }catch(e){ saveLocal(); }
+  treinoHoje={...th,lancado:true}; salvarTreinoDoc("treino_hoje",treinoHoje); renderMfit();
 }
 function mfShow(key){
   const v=$("mfViewer"), fr=$("mfFrame");
@@ -2415,11 +2543,25 @@ window.addEventListener("message",e=>{
   mfReady=true;
   if(mfPending){ $("mfFrame").contentWindow.postMessage({mfEx:mfPending},"*"); mfPending=null; }
 });
+$("mfit").addEventListener("toggle",e=>{ if(e.target.id==="mfBuild") mfF.aberto=e.target.open; },true);
+$("mfit").addEventListener("input",e=>{ const k=e.target.dataset&&e.target.dataset.mff; if(k) mfF[k]=e.target.value; });
+$("mfit").addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="mfAsk"){ e.preventDefault(); document.querySelector("[data-mfask]")?.click(); } });
 $("mfit").addEventListener("click",e=>{
-  if(e.target.closest("[data-mfclose]")){ $("mfViewer").hidden=true; $("mfFrame").removeAttribute("src"); mfReady=false; mfPending=null; return; }
-  const x=e.target.closest("[data-mfx]"); if(x){ mfShow(x.dataset.mfx); return; }
-  if(e.target.closest("[data-mfgen]")){ if(typeof abrirOnb==="function"&&window.__sbUser){ abrirOnb(); } else { treinoPlano=TREINO_GEN.gerar({dias:(rotina.treino||{}).dias||[],min:(rotina.treino||{}).min||60,nivel:perfil.nivel,local:perfil.local,goal:settings.goal}); mfDay=null; renderMfit(); } return; }
-  const b=e.target.closest("[data-mf]"); if(b){ mfDay=+b.dataset.mf; renderMfit(); }
+  const t=e.target.closest("button"); if(!t) return;
+  if(t.matches("[data-mfclose]")){ $("mfViewer").hidden=true; $("mfFrame").removeAttribute("src"); mfReady=false; mfPending=null; return; }
+  if(t.dataset.mfx){ mfShow(t.dataset.mfx); return; }
+  if(t.dataset.mfmod){ mfF.mod=t.dataset.mfmod; mfF.objetivo=""; mfF.min=""; mfMsg=""; renderMfit(); return; }
+  if(t.dataset.mfesp){ mfF.esporte=t.dataset.mfesp; mfF.min=""; mfMsg=""; renderMfit(); return; }
+  if(t.dataset.mfgr){ const g=t.dataset.mfgr; mfF.grupos=mfF.grupos.includes(g)?mfF.grupos.filter(x=>x!==g):[...mfF.grupos,g]; renderMfit(); return; }
+  if(t.dataset.mfq){ mfF.quando=t.dataset.mfq; mfMsg=""; renderMfit(); return; }
+  if(t.dataset.mfdia!=null){ const d=+t.dataset.mfdia; mfF.dias=mfF.dias.includes(d)?mfF.dias.filter(x=>x!==d):[...mfF.dias,d].sort(); mfMsg=""; renderMfit(); return; }
+  if(t.matches("[data-mfmontar]")){ mfMontar(); return; }
+  if(t.matches("[data-mfask]")){ const v=($("mfAsk")?.value||"").trim(); if(v) chatPedir(/treino/i.test(v)?v:"Monte um treino: "+v); else $("mfAsk")?.focus(); return; }
+  if(t.matches("[data-mflancar]")){ mfLancar(); return; }
+  if(t.matches("[data-mfdesc]")){ treinoHoje=null; if(db) db.doc("tracker/treino_hoje").delete().catch(()=>{}); else salvarTreinoDoc("treino_hoje",null); renderMfit(); return; }
+  if(t.dataset.mforig!=null){ const d=t.dataset.mforig; treinoExtra={dias:{...((treinoExtra&&treinoExtra.dias)||{})}}; delete treinoExtra.dias[d]; salvarTreinoDoc("treino_extra",treinoExtra); renderMfit(); return; }
+  if(t.matches("[data-mfgen]")){ if(typeof abrirOnb==="function"&&window.__sbUser){ abrirOnb(); } else { treinoPlano=TREINO_GEN.gerar({dias:(rotina.treino||{}).dias||[],min:(rotina.treino||{}).min||60,nivel:perfil.nivel,local:perfil.local,goal:settings.goal}); mfDay=null; renderMfit(); } return; }
+  if(t.dataset.mf!=null){ mfDay=+t.dataset.mf; renderMfit(); }
 });
 
 /* início */
@@ -2609,21 +2751,146 @@ function acctUi(sb,session){
   if(!db){
     let sb=null, session=null;
     try{ sb=window.supabase?.createClient(SB_URL,SB_KEY); session=(await sb?.auth.getSession())?.data?.session||null; }catch(e){ sb=null; }
+    window.__sb=sb;
     if(sb){ acctUi(sb,session); sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_IN"&&!session) location.reload(); if(ev==="SIGNED_OUT") location.reload(); }); }
     if(session){ db=supaDb(sb,session.user.id); window.__sbUser=session.user; }
   }
-  if(!db){ loadLocal(); loadAgLocal(); render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
+  if(!db){ loadLocal(); loadAgLocal(); try{ const t=JSON.parse(localStorage.getItem("ritmo-treino-v1")||"null"); if(t){ treinoHoje=t.treinoHoje||null; treinoExtra=t.treinoExtra||{dias:{}}; } }catch(e){} render(); $("storeNote").textContent="Salvando só neste aparelho. Entre com sua conta para sincronizar."; return; }
   const timer=setTimeout(()=>{ $("storeNote").textContent="Demorando para carregar seus dias…"; },10000);
   db.collection("tracker").onSnapshot(snap=>{
     clearTimeout(timer); $("storeNote").textContent="";
-    const next={}, ag={}; let rot=null, base=null;
+    const next={}, ag={}; let rot=null, base=null; treinoHoje=null; treinoExtra={dias:{}};
     let temPerfil=false, inb=[];
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="treino_hoje") treinoHoje=v&&v.ex?v:null; else if(id==="treino_extra") treinoExtra=v&&v.dias?v:{dias:{}}; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
     inbox={itens:inb}; days=next; agMerge(ag,rot); safeRender();
     if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
   },()=>{ clearTimeout(timer); $("storeNote").textContent="Não consegui carregar seus dias. Recarregue a página."; });
 })();
+/* Chat com o assistente (o mesmo agente do WhatsApp, via AGENTE_API/api/chat). */
+const CHAT={aberto:false,carregado:false,enviando:false,anexo:null,rec:null,sugs:true};
+const chatLog=()=>$("chatLog");
+function fmtZap(t){
+  let h=esc(t);
+  h=h.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  h=h.replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g,'$1<b>$2</b>').replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,!?:;]|$)/g,'$1<i>$2</i>').replace(/(^|[\s(])~([^~\n]+)~(?=[\s).,!?:;]|$)/g,'$1<s>$2</s>');
+  return h.replace(/\n/g,"<br>");
+}
+function chatAdd(tipo,conteudo,extra=""){
+  const el=document.createElement("div"); el.className="cmsg "+tipo+(extra?" "+extra:"");
+  if(tipo==="dig") el.innerHTML="<i></i><i></i><i></i>";
+  else if(extra==="fig") el.innerHTML=conteudo;
+  else el.innerHTML=fmtZap(conteudo);
+  chatLog().append(el); chatLog().scrollTop=chatLog().scrollHeight; return el;
+}
+function chatItens(itens){
+  (itens||[]).forEach(it=>{
+    if(it.tipo==="texto") chatAdd("ele",it.texto);
+    else if(it.tipo==="transcricao") chatAdd("trans","🎤 "+it.texto);
+    else if(it.tipo==="imagem"&&/^data:image\//.test(it.src)) chatAdd("ele",`<img src="${it.src}" alt="${it.figurinha?"Figurinha":"Imagem"}">`,"fig");
+    else if(it.tipo==="video"&&/^data:video\//.test(it.src)) chatAdd("ele",`<video src="${it.src}" autoplay loop muted playsinline></video>`,"fig");
+  });
+}
+async function chatToken(){ try{ return (await window.__sb?.auth.getSession())?.data?.session?.access_token||null; }catch(e){ return null; } }
+function chatSugs(){
+  const box=$("chatSug"); if(!CHAT.sugs){ box.innerHTML=""; return; }
+  const s=["Monte um treino de peito e tríceps","Quero um treino aeróbico","Monte um treino de resistência para mim","Quanto comi hoje?"];
+  box.innerHTML=s.map(x=>`<button type="button">${esc(x)}</button>`).join("");
+}
+async function chatAbrir(){
+  CHAT.aberto=true; $("chatBox").hidden=false; $("chatFab").setAttribute("aria-expanded","true"); document.body.classList.add("chat-aberto"); $("chatDot").hidden=true;
+  setTimeout(()=>$("chatIn").focus(),50);
+  if(CHAT.carregado) return;
+  const tk=await chatToken();
+  if(!tk){ chatLog().innerHTML=""; chatAdd("ele","Para conversar comigo aqui, entre na sua conta do Meu Ritmo (no topo da página). Sou o mesmo assistente do WhatsApp: lanço comida, água, treino e sono, monto treinos, anoto tarefas e muito mais."); $("chatSug").innerHTML=""; return; }
+  CHAT.carregado=true; chatLog().innerHTML=""; const dig=chatAdd("dig");
+  try{
+    const r=await fetch(AGENTE_API+"/api/chat",{headers:{authorization:"Bearer "+tk}}); const j=await r.json().catch(()=>({}));
+    dig.remove();
+    (j.mensagens||[]).forEach(m=>{ const t=String(m.texto||""); if(!t||/^\[(figurinha|GIF) enviad[oa]\]$/.test(t)) return; chatAdd(m.papel==="user"?"eu":"ele",t.replace(/\n\[(imagem|vídeo) anexad[oa], media_id=[^\]]+\]/,"\n📎 $1")); });
+    if(!(j.mensagens||[]).length) chatAdd("ele","Oi! Sou o seu assistente do Meu Ritmo. Me conte o que comeu, bebeu ou treinou, peça um treino sob medida, ou pergunte como está o seu dia. 💪");
+    if(j.whatsapp===false) $("chatSub").textContent="Conecte o WhatsApp para receber lembretes";
+    CHAT.sugs=!(j.mensagens||[]).length; chatSugs();
+  }catch(e){ dig.remove(); CHAT.carregado=false; chatAdd("ele","Não consegui falar com o assistente agora. Confira a internet e tente de novo."); }
+}
+function chatFechar(){ CHAT.aberto=false; $("chatBox").hidden=true; $("chatFab").setAttribute("aria-expanded","false"); document.body.classList.remove("chat-aberto"); }
+async function chatEnviar(corpo,mostrar){
+  if(CHAT.enviando) return;
+  const tk=await chatToken();
+  if(!tk){ chatAdd("ele","Entre na sua conta do Meu Ritmo para conversar comigo."); return; }
+  CHAT.enviando=true; $("chatEnviar").disabled=true; CHAT.sugs=false; chatSugs();
+  if(mostrar) chatAdd("eu",mostrar.texto||"",mostrar.fig?"fig":"");
+  const dig=chatAdd("dig");
+  try{
+    const r=await fetch(AGENTE_API+"/api/chat",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+tk},body:JSON.stringify(corpo)});
+    const j=await r.json().catch(()=>({})); dig.remove();
+    if(r.status===401){ chatAdd("ele","Sua sessão expirou. Entre de novo na sua conta."); return; }
+    if(r.status===413){ chatAdd("ele","Esse arquivo ficou grande demais. Tente um menor."); return; }
+    if(j.itens&&j.itens.length) chatItens(j.itens); else if(j.erro) chatAdd("ele",j.erro); else if(!r.ok) chatAdd("ele","Não consegui responder agora. Tente de novo.");
+    // O que o assistente lançou chega pelo realtime; o "focus" força recarregar se ele estiver desligado.
+    window.dispatchEvent(new Event("focus"));
+    if(!CHAT.aberto) $("chatDot").hidden=false;
+  }catch(e){ dig.remove(); chatAdd("ele","Não consegui falar com o assistente agora. Confira a internet e tente de novo."); }
+  finally{ CHAT.enviando=false; $("chatEnviar").disabled=false; }
+}
+function chatPedir(texto){ chatAbrir().then(()=>{ if(CHAT.carregado) chatEnviar({texto},{texto}); else $("chatIn").value=texto; }); }
+function lerArquivo(f){ return new Promise((ok,erro)=>{ const r=new FileReader(); r.onload=()=>ok(r.result); r.onerror=erro; r.readAsDataURL(f); }); }
+async function reduzirImagem(f){
+  if(f.type==="image/gif") return f.size<3.5e6?lerArquivo(f):null;
+  const url=URL.createObjectURL(f);
+  try{
+    const img=await new Promise((ok,erro)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=erro; i.src=url; });
+    const k=Math.min(1,1280/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement("canvas");
+    c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k); c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    return c.toDataURL("image/jpeg",.82);
+  }catch(e){ return f.size<3.5e6?lerArquivo(f):null; } finally{ URL.revokeObjectURL(url); }
+}
+function chatPrevDraw(){
+  const p=$("chatPrev"), a=CHAT.anexo; p.hidden=!a; if(!a){ p.innerHTML=""; return; }
+  p.innerHTML=`${a.tipo==="imagem"?`<img src="${a.src}" alt="">`:`<span>🎬</span>`}<span>${a.tipo==="imagem"?"Foto":"Vídeo"} anexad${a.tipo==="imagem"?"a":"o"}. Sem texto vira figurinha; com texto, eu analiso.</span><button type="button" aria-label="Tirar anexo">${ICON("x")}</button>`;
+  p.querySelector("button").onclick=()=>{ CHAT.anexo=null; chatPrevDraw(); };
+}
+$("chatFab").onclick=()=>CHAT.aberto?chatFechar():chatAbrir();
+$("chatX").onclick=chatFechar;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&CHAT.aberto&&$("overlay").hidden) chatFechar(); });
+$("chatSug").onclick=e=>{ const b=e.target.closest("button"); if(b) chatEnviar({texto:b.textContent},{texto:b.textContent}); };
+$("chatIn").addEventListener("input",e=>{ const t=e.target; t.style.height="auto"; t.style.height=Math.min(120,t.scrollHeight)+"px"; });
+$("chatIn").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit(); } });
+$("chatForm").onsubmit=e=>{
+  e.preventDefault(); const texto=$("chatIn").value.trim(), a=CHAT.anexo;
+  if(!texto&&!a) return;
+  const corpo={texto}; let mostrar={texto};
+  if(a){ corpo[a.tipo]=a.src; mostrar=a.tipo==="imagem"?{texto:`<img src="${a.src}" alt="">`+(texto?`<div style="margin-top:6px">${fmtZap(texto)}</div>`:""),fig:true}:{texto:"🎬 vídeo"+(texto?"\n"+texto:"")}; }
+  $("chatIn").value=""; $("chatIn").style.height=""; CHAT.anexo=null; chatPrevDraw();
+  chatEnviar(corpo,mostrar);
+};
+$("chatAnexo").onclick=()=>$("chatFile").click();
+$("chatFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  if(f.type.startsWith("video/")){
+    if(f.size>3.5e6){ chatAdd("ele","Esse vídeo passa de 3,5 MB. Mande um trecho menor, ou mande pelo WhatsApp."); return; }
+    CHAT.anexo={tipo:"video",src:await lerArquivo(f)};
+  } else {
+    const src=await reduzirImagem(f); if(!src){ chatAdd("ele","Não consegui abrir essa imagem."); return; }
+    CHAT.anexo={tipo:"imagem",src};
+  }
+  chatPrevDraw(); $("chatIn").focus();
+};
+$("chatMic").onclick=async ()=>{
+  const b=$("chatMic");
+  if(CHAT.rec){ CHAT.rec.stop(); return; }
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){ chatAdd("ele","Este navegador não grava áudio. Escreva a mensagem, ou mande o áudio pelo WhatsApp."); return; }
+  let stream; try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ chatAdd("ele","Não tenho permissão para usar o microfone. Libere nas configurações do navegador."); return; }
+  const rec=new MediaRecorder(stream); const partes=[]; CHAT.rec=rec;
+  b.classList.add("rec"); b.setAttribute("aria-label","Parar e enviar áudio");
+  const limite=setTimeout(()=>rec.state!=="inactive"&&rec.stop(),90000);
+  rec.ondataavailable=ev=>{ if(ev.data.size) partes.push(ev.data); };
+  rec.onstop=async ()=>{
+    clearTimeout(limite); stream.getTracks().forEach(t=>t.stop()); CHAT.rec=null; b.classList.remove("rec"); b.setAttribute("aria-label","Gravar áudio");
+    const blob=new Blob(partes,{type:rec.mimeType||"audio/webm"}); if(blob.size<800) return;
+    chatEnviar({audio:await lerArquivo(blob)},{texto:"🎤 áudio"});
+  };
+  rec.start();
+};
 </script>
-
 </body></html>
