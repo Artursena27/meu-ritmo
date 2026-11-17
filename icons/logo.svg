@@ -1,23 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5b1fd6"/>
-      <stop offset=".55" stop-color="#b44dff"/>
-      <stop offset="1" stop-color="#ff4fd8"/>
-    </linearGradient>
-    <radialGradient id="luz" cx=".3" cy=".22" r=".75">
-      <stop offset="0" stop-color="#fff" stop-opacity=".28"/>
-      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    <!-- preto fosco: quase preto, com uma luz bem suave no alto -->
+    <radialGradient id="bg" cx=".35" cy=".25" r=".95">
+      <stop offset="0" stop-color="#1c1f1d"/>
+      <stop offset=".6" stop-color="#101211"/>
+      <stop offset="1" stop-color="#0a0b0a"/>
     </radialGradient>
-    <filter id="brilho" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="10"/>
+    <filter id="grao" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .05 0"/>
+    </filter>
+    <filter id="neon" x="-30%" y="-60%" width="160%" height="220%">
+      <feGaussianBlur stdDeviation="14"/>
     </filter>
   </defs>
   <rect width="512" height="512" fill="url(#bg)"/>
-  <rect width="512" height="512" fill="url(#luz)"/>
-  <!-- o "ritmo": um pulso que desenha um M -->
-  <path d="M84 296 H160 L204 168 L256 340 L308 168 L352 296 H428" fill="none" stroke="#2a0a52" stroke-opacity=".45" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" filter="url(#brilho)" transform="translate(0 10)"/>
-  <path d="M84 296 H160 L204 168 L256 340 L308 168 L352 296 H428" fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="428" cy="296" r="30" fill="#fff"/>
-  <circle cx="428" cy="296" r="13" fill="#ff4fd8"/>
+  <rect width="512" height="512" filter="url(#grao)"/>
+  <!-- o "ritmo": um pulso que desenha um M, em verde neon com brilho -->
+  <path d="M84 296 H160 L204 168 L256 340 L308 168 L352 296 H428" fill="none" stroke="#39ff88" stroke-opacity=".75" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon)"/>
+  <path d="M84 296 H160 L204 168 L256 340 L308 168 L352 296 H428" fill="none" stroke="#39ff88" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M84 296 H160 L204 168 L256 340 L308 168 L352 296 H428" fill="none" stroke="#d9ffe9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".8"/>
+  <circle cx="428" cy="296" r="34" fill="#39ff88" filter="url(#neon)" opacity=".8"/>
+  <circle cx="428" cy="296" r="28" fill="#39ff88"/>
+  <circle cx="428" cy="296" r="11" fill="#0d0f0e"/>
 </svg>
