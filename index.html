@@ -1,5 +1,13 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Meu Ritmo</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Meu Ritmo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05040a">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -375,6 +383,17 @@ body[data-g="home"] .controls{display:none}
 .mf-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#0b0616;background:var(--ok);border-radius:999px;padding:3px 9px}.mf-badge.alt{background:var(--warn)}
 .mf-tabs .ov{position:relative}.mf-tabs .ov::after{content:"";position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
 /* chat */
+.avbell{position:relative}.avn{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--pink);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg0)}
+.avbox{margin-top:12px;border-top:1px solid var(--edge);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.avhd{display:flex;align-items:center;gap:12px}.avhd h3{display:flex;gap:8px;align-items:center;font-size:16px;margin-right:auto}.avhd .x{border:0;background:none;color:var(--muted);padding:4px}
+.linkbtn{border:0;background:none;color:#e3c4ff;font-weight:700;font-size:12.5px;padding:2px 0;text-decoration:underline;text-underline-offset:3px}
+.avlist{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.avitem{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:12px;background:var(--glass);border:1px solid var(--edge)}.avitem.novo{border-color:var(--edge2);background:rgba(180,77,255,.1)}
+.avitem p{margin:0;font-size:13.5px}.avitem small{color:var(--muted);font-size:11.5px}.avitem>div{flex:1}.avic{font-size:18px;line-height:1.2}
+.avcfg summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--muted)}.avcfg[open] summary{margin-bottom:10px}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:10px}
+.avchk{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--edge);cursor:pointer}.avchk input{margin-top:3px;accent-color:var(--neon)}.avchk b{display:block;font-size:13px}.avchk small{color:var(--muted);font-size:11.5px}
+.avtoast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:40;width:min(440px,calc(100vw - 24px));display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(20,10,38,.97);border:1px solid var(--edge2);box-shadow:0 14px 40px rgba(0,0,0,.55)}.avtoast p{margin:0;flex:1;font-size:13.5px}.avtoast button{border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;border-radius:10px;width:36px;height:36px;display:grid;place-items:center}
 .chatfab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:35;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--neon),var(--pink));color:#fff;display:grid;place-items:center;box-shadow:0 8px 28px rgba(180,77,255,.55)}
 .chatfab svg.i{width:28px;height:28px}.chatfab:hover{transform:translateY(-2px)}.chatfab .dot{position:absolute;top:8px;right:9px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid #1a0b2e}
 .chatbox{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:30;width:min(400px,calc(100vw - 24px));height:min(600px,calc(100vh - 120px));display:flex;flex-direction:column;background:rgba(14,8,28,.97);backdrop-filter:blur(14px);border:1px solid var(--edge2);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
@@ -523,6 +542,7 @@ body[data-g="home"] .controls{display:none}
   <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.8-9.94A6 6 0 0 1 17.7 7.3 4.5 4.5 0 0 1 17.5 16H11l-4 3.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
@@ -600,9 +620,10 @@ body[data-g="home"] .controls{display:none}
     </div>
     <div class="acct-in acct-on" id="acctIn" hidden>
       <span class="acct-txt"><b>Sincronizado</b><span id="acctWho"></span></span>
-      <span class="acct-form" style="flex:0 1 auto"><button class="btn" type="button" id="acctTreino"><svg class="i"><use href="#i-dumbbell"/></svg>Gerar novo treino</button><button class="btn line" type="button" id="acctZap" hidden>Conectar WhatsApp</button><button class="btn line" type="button" id="acctLogout">Sair</button></span>
+      <span class="acct-form" style="flex:0 1 auto"><button class="btn line avbell" type="button" id="acctAvisos" aria-label="Avisos"><svg class="i"><use href="#i-bell"/></svg>Avisos<span class="avn" id="acctAvisosN" hidden></span></button><button class="btn" type="button" id="acctTreino"><svg class="i"><use href="#i-dumbbell"/></svg>Gerar novo treino</button><button class="btn line" type="button" id="acctZap" hidden>Conectar WhatsApp</button><button class="btn line" type="button" id="acctLogout">Sair</button></span>
       <p class="acct-msg" id="acctZapMsg" hidden></p>
     </div>
+    <div class="avbox" id="avisosBox" hidden></div>
   </section>
 
   <section class="home" id="home" hidden></section>
@@ -2782,14 +2803,120 @@ function acctUi(sb,session){
   const timer=setTimeout(()=>{ $("storeNote").textContent="Demorando para carregar seus dias…"; },10000);
   db.collection("tracker").onSnapshot(snap=>{
     clearTimeout(timer); $("storeNote").textContent="";
-    const next={}, ag={}; let rot=null, base=null; treinoHoje=null; treinoExtra={dias:{}}; treinoHist={itens:[]};
+    const next={}, ag={}; let rot=null, base=null; treinoHoje=null; treinoExtra={dias:{}}; treinoHist={itens:[]}; avisos={itens:[]}; avisosCfg={}; pushDoc={inscricoes:[]};
     let temPerfil=false, inb=[];
-    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="treino_hoje") treinoHoje=v&&v.ex?v:null; else if(id==="treino_extra") treinoExtra=v&&v.dias?v:{dias:{}}; else if(id==="treino_historico") treinoHist=v&&Array.isArray(v.itens)?v:{itens:[]}; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else next[id]=v; });
+    snap.docs.forEach(d=>{ const id=d.id, v=d.data(); if(id==="perfil") temPerfil=true; if(id==="settings") settings={...DEFAULTS,...v}; else if(id==="perfil") perfil=v||{}; else if(id==="treino") treinoPlano=v&&v.dias?v:null; else if(id==="treino_hoje") treinoHoje=v&&v.ex?v:null; else if(id==="treino_extra") treinoExtra=v&&v.dias?v:{dias:{}}; else if(id==="treino_historico") treinoHist=v&&Array.isArray(v.itens)?v:{itens:[]}; else if(id==="inbox") inb=Array.isArray(v?.itens)?v.itens:[]; else if(id==="rotina") rot=v; else if(id==="base") base=v; else if(id.startsWith("ag_")) ag[id]=v; else if(id==="avisos") avisos=v&&Array.isArray(v.itens)?v:{itens:[]}; else if(id==="avisos_config") avisosCfg=v||{}; else if(id==="push") pushDoc=v&&Array.isArray(v.inscricoes)?v:{inscricoes:[]}; else if(/^w\d+d\d$/.test(id)) next[id]=v; });
     if (applyBaseExtra(base?.itens)) refreshBase();
     inbox={itens:inb}; days=next; agMerge(ag,rot); safeRender();
+    try{ avisosBadge(); avisosNovos(); renderAvisos(); syncTreinoSemana(); }catch(e){ console.warn(e); }
     if(window.__sbUser && !onbVisto){ onbVisto=true; if(!temPerfil) abrirOnb(); }
   },()=>{ clearTimeout(timer); $("storeNote").textContent="Não consegui carregar seus dias. Recarregue a página."; });
 })();
+/* Avisos: central no app + notificações (push) neste aparelho. O agente gera e manda (agente-whatsapp/lib/avisos.js). */
+let avisos={itens:[]}, avisosCfg={}, pushDoc={inscricoes:[]}, avisosAberto=false, avisosVistos=null, pushMsg="";
+const CFG_PADRAO={agua:true,treino:true,estudo:true,refeicoes:true,whatsapp:true,push:true};
+const AV_ICONE={treino:"🏋️",agua_tarde:"💧",agua_noite:"💧",estudo:"📚",refeicoes:"🍽️"};
+const ehIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const instalado=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const pushSuportado=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+let swReg=null;
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then(r=>{ swReg=r; }).catch(()=>{});
+navigator.serviceWorker?.addEventListener("message",e=>{ if(e.data&&e.data.abrirChat) chatAbrir(); });
+function quandoAviso(iso){ const d=new Date(iso), h=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); return isoOf(d)===isoOf(new Date())?"hoje "+h:ddmm(d)+" "+h; }
+function avisosNaoLidos(){ return (avisos.itens||[]).filter(a=>!a.lido).length; }
+function avisosBadge(){ const n=avisosNaoLidos(), b=$("acctAvisosN"); if(!b) return; b.textContent=n>9?"9+":n; b.hidden=!n; }
+/* Aviso novo chegando com o app aberto: um toque discreto no canto. */
+function avisosNovos(){
+  const ids=(avisos.itens||[]).map(a=>a.id);
+  if(avisosVistos){ const novo=(avisos.itens||[]).find(a=>!avisosVistos.has(a.id)&&!a.lido); if(novo) avisoToast(novo); }
+  avisosVistos=new Set(ids);
+}
+function avisoToast(a){
+  let t=$("avisoToast"); if(!t){ t=document.createElement("div"); t.id="avisoToast"; t.className="avtoast"; t.setAttribute("role","status"); document.body.append(t); }
+  t.innerHTML=`<span>${AV_ICONE[a.tipo]||"🔔"}</span><p>${esc(a.texto)}</p><button type="button" aria-label="Responder no chat">${ICON("chat")}</button>`;
+  t.hidden=false; t.querySelector("button").onclick=()=>{ t.hidden=true; chatAbrir(); };
+  clearTimeout(t._h); t._h=setTimeout(()=>{ t.hidden=true; },9000);
+}
+async function salvarAvisos(){ if(db) await db.doc("tracker/avisos").set({itens:avisos.itens}).catch(()=>{}); }
+async function marcarLidos(ids){ let mudou=false; avisos.itens=(avisos.itens||[]).map(a=>{ if((!ids||ids.includes(a.id))&&!a.lido){ mudou=true; return {...a,lido:true}; } return a; }); if(mudou){ avisosBadge(); await salvarAvisos(); } }
+function cfgAv(){ return {...CFG_PADRAO,...(avisosCfg||{})}; }
+function esteAparelhoInscrito(){ return !!(pushSuportado()&&Notification.permission==="granted"&&localStorage.getItem("ritmo-push-endpoint")&&(pushDoc.inscricoes||[]).some(s=>s.endpoint===localStorage.getItem("ritmo-push-endpoint"))); }
+function renderAvisos(){
+  const box=$("avisosBox"); if(!box) return; box.hidden=!avisosAberto; if(!avisosAberto) return;
+  const c=cfgAv(), it=avisos.itens||[];
+  const chk=(k,l,sub)=>`<label class="avchk"><input type="checkbox" data-avcfg="${k}" ${c[k]?"checked":""}><span><b>${l}</b>${sub?`<small>${sub}</small>`:""}</span></label>`;
+  let pushHTML;
+  if(esteAparelhoInscrito()) pushHTML=`<p class="hint">✅ Este aparelho recebe as notificações. <button class="linkbtn" type="button" data-avteste>Mandar um teste</button> · <button class="linkbtn" type="button" data-avsair>Desativar aqui</button></p>`;
+  else if(ehIOS&&!instalado()) pushHTML=`<p class="hint">No iPhone, as notificações só funcionam com o app na tela de início: toque em <b>Compartilhar</b> <span aria-hidden="true">⬆️</span> e depois em <b>Adicionar à Tela de Início</b>. Abra o Meu Ritmo pelo ícone e ative aqui.</p>`;
+  else if(!pushSuportado()) pushHTML=`<p class="hint">Este navegador não recebe notificações. Os avisos continuam chegando no WhatsApp e aqui.</p>`;
+  else if(Notification.permission==="denied") pushHTML=`<p class="hint">As notificações estão bloqueadas para este site. Libere nas configurações do navegador e volte aqui.</p>`;
+  else pushHTML=`<button class="btn" type="button" data-avativar>${ICON("bell")}Ativar notificações neste aparelho</button>`;
+  box.innerHTML=`<div class="avhd"><h3>${ICON("bell")}Avisos</h3>${it.some(a=>!a.lido)?`<button class="linkbtn" type="button" data-avlertudo>Marcar tudo como lido</button>`:""}<button class="x" type="button" data-avfechar aria-label="Fechar avisos">${ICON("x")}</button></div>
+    <div class="avlist">${it.length?it.slice(0,20).map(a=>`<div class="avitem ${a.lido?"":"novo"}" data-avid="${esc(a.id)}"><span class="avic">${AV_ICONE[a.tipo]||"🔔"}</span><div><p>${esc(a.texto)}</p><small>${quandoAviso(a.quando)}${a.whatsapp?" · também no WhatsApp":""}</small></div><button class="linkbtn" type="button" data-avresp>Responder</button></div>`).join("")
+      :`<p class="hint">Nenhum aviso ainda. Eles chegam aqui, no WhatsApp e como notificação: treino do dia às 7h, água às 15h e 20h, estudo às 18h e refeições às 21h30.</p>`}</div>
+    <details class="avcfg"><summary>Ajustar avisos</summary>
+      <div class="avgrid">${chk("treino","Treino do dia","7h, nos dias de treino")}${chk("agua","Pouca água","15h e 20h, se estiver abaixo da meta")}${chk("estudo","Estudo pendente","18h, com as matérias do dia")}${chk("refeicoes","Refeições","21h30, se faltar lançar")}</div>
+      <div class="avgrid">${chk("whatsapp","No WhatsApp","precisa do WhatsApp conectado")}${chk("push","Notificação no celular/PC","nos aparelhos ativados")}</div>
+      ${pushMsg?`<p class="mf-err">${esc(pushMsg)}</p>`:""}${pushHTML}
+    </details>`;
+}
+function abrirAvisos(on=!avisosAberto){ avisosAberto=on; renderAvisos(); if(on) setTimeout(()=>marcarLidos(),2500); }
+function b64url(s){ const p="=".repeat((4-s.length%4)%4), b=atob((s+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from(b,c=>c.charCodeAt(0)); }
+async function ativarPush(){
+  pushMsg="";
+  try{
+    if(!db){ pushMsg="Entre na sua conta para ativar."; return renderAvisos(); }
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){ pushMsg="Sem permissão, não dá para mandar notificação."; return renderAvisos(); }
+    const reg=swReg||await navigator.serviceWorker.register("/sw.js"); await navigator.serviceWorker.ready;
+    const {chave}=await fetch(AGENTE_API+"/api/push").then(r=>r.json());
+    if(!chave) throw new Error("sem chave");
+    let sub=await reg.pushManager.getSubscription();
+    if(sub&&sub.options?.applicationServerKey&&btoa(String.fromCharCode(...new Uint8Array(sub.options.applicationServerKey))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")!==chave){ await sub.unsubscribe(); sub=null; }
+    sub=sub||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64url(chave)});
+    const j=sub.toJSON(); localStorage.setItem("ritmo-push-endpoint",j.endpoint);
+    pushDoc={inscricoes:[...(pushDoc.inscricoes||[]).filter(s=>s.endpoint!==j.endpoint),{...j,aparelho:navigator.userAgent.slice(0,120),criado:new Date().toISOString()}].slice(-8)};
+    await db.doc("tracker/push").set(pushDoc);
+    if(!cfgAv().push){ avisosCfg={...cfgAv(),push:true}; await db.doc("tracker/avisos_config").set(avisosCfg); }
+    reg.showNotification("Meu Ritmo",{body:"Pronto! Os avisos vão chegar aqui também. 💪",icon:"/icons/icon-192.png",tag:"ativado"});
+  }catch(e){ pushMsg="Não consegui ativar agora. Tente de novo em instantes."; }
+  renderAvisos();
+}
+async function desativarPush(){
+  const ep=localStorage.getItem("ritmo-push-endpoint");
+  try{ const sub=await (swReg||await navigator.serviceWorker.ready).pushManager.getSubscription(); await sub?.unsubscribe(); }catch(e){}
+  pushDoc={inscricoes:(pushDoc.inscricoes||[]).filter(s=>s.endpoint!==ep)}; localStorage.removeItem("ritmo-push-endpoint");
+  if(db) await db.doc("tracker/push").set(pushDoc).catch(()=>{});
+  renderAvisos();
+}
+/* O plano da semana vai para o agente saber "hoje tem treino de perna" (inclui a ficha fixa e as trocas). */
+let treinoSemanaSalvo="";
+function syncTreinoSemana(){
+  if(!db||!window.__sbUser) return;
+  const P=planoTreino(), dias={};
+  Object.keys(P.dias||{}).forEach(k=>{ const x=P.dias[k]; dias[k]={nome:x.nome,grupos:x.grupos||[]}; });
+  const s=JSON.stringify({dias}); if(s===treinoSemanaSalvo) return; treinoSemanaSalvo=s;
+  db.doc("tracker/treino_semana").set({dias}).catch(()=>{ treinoSemanaSalvo=""; });
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button,input"); if(!t) return;
+  if(t.id==="acctAvisos"){ abrirAvisos(); return; }
+  if(!t.closest("#avisosBox")) return;
+  if(t.matches("[data-avfechar]")) abrirAvisos(false);
+  else if(t.matches("[data-avlertudo]")) marcarLidos().then(renderAvisos);
+  else if(t.matches("[data-avresp]")){ const id=t.closest("[data-avid]").dataset.avid; marcarLidos([id]); chatAbrir(); }
+  else if(t.matches("[data-avativar]")) ativarPush();
+  else if(t.matches("[data-avsair]")) desativarPush();
+  else if(t.matches("[data-avteste]")) navigator.serviceWorker.ready.then(r=>r.showNotification("Meu Ritmo",{body:"Teste: está tudo certo com as notificações 🔔",icon:"/icons/icon-192.png",tag:"teste"}));
+});
+document.addEventListener("change",e=>{
+  const k=e.target.dataset&&e.target.dataset.avcfg; if(!k) return;
+  avisosCfg={...cfgAv(),[k]:e.target.checked};
+  if(db) db.doc("tracker/avisos_config").set(avisosCfg).catch(()=>{});
+});
+// Veio de uma notificação (?chat=1): abre a conversa para responder.
+if(/[?&]chat=1/.test(location.search)){ history.replaceState(null,"",location.pathname); setTimeout(()=>chatAbrir(),1200); }
+
 /* Chat com o assistente (o mesmo agente do WhatsApp, via AGENTE_API/api/chat). */
 const CHAT={aberto:false,carregado:false,enviando:false,anexo:null,rec:null,sugs:true};
 const chatLog=()=>$("chatLog");
